@@ -3,6 +3,7 @@ using Korp.Invoice.Inventory.Application.DTOs;
 using Korp.Invoice.Inventory.Application.Interfaces;
 using Korp.Invoice.Inventory.Application.Requests;
 using Korp.Invoice.Inventory.Domain.Entities;
+using Korp.Invoice.Inventory.Domain.Exceptions;
 using Korp.Invoice.Inventory.Domain.Repositories;
 namespace Korp.Invoice.Inventory.Application.Services;
 
@@ -24,7 +25,7 @@ public sealed class ProductAppService : IProductAppService
         var existingProduct = await _productRepository.GetByCodeAsync(request.Code, cancellationToken);
 
         if (existingProduct is not null)
-            throw new InvalidOperationException($"Já existe um produto cadastrado com o código '{request.Code}'.");
+            throw new ConflictException($"Já existe um produto cadastrado com o código '{request.Code}'.");
 
         var product = new Product(request.Code, request.Description, request.Stock);
 
@@ -32,11 +33,11 @@ public sealed class ProductAppService : IProductAppService
 
         return Map(product);
     }
-    public async Task<ProductDto?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    public async Task<ProductDto> GetByIdAsync(Guid id,CancellationToken cancellationToken = default)
     {
-        var product = await _productRepository.GetByIdAsync(id, cancellationToken);
+        var product = await _productRepository.GetByIdAsync(id,cancellationToken);
 
-        return product is null ? null : Map(product);
+        return product is null ? throw new NotFoundException("Produto", id) : Map(product);
     }
     public async Task<IReadOnlyCollection<ProductDto>> GetAllAsync(CancellationToken cancellationToken = default)
     {
