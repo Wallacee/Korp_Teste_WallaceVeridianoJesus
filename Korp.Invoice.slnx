@@ -1,0 +1,20 @@
+<Solution>
+  <Folder Name="/Itens de Solução/">
+    <File Path="Directory.Build.props" />
+    <File Path="README.md" />
+  </Folder>
+  <Folder Name="/src/" />
+  <Folder Name="/src/backend/" />
+  <Folder Name="/src/backend/Billing/">
+    <Project Path="src/backend/Billing/Korp.Invoice.Billing.Api/Korp.Invoice.Billing.Api.csproj" />
+    <Project Path="src/backend/Billing/Korp.Invoice.Billing.Application/Korp.Invoice.Billing.Application.csproj" />
+    <Project Path="src/backend/Billing/Korp.Invoice.Billing.Domain/Korp.Invoice.Billing.Domain.csproj" />
+    <Project Path="src/backend/Billing/Korp.Invoice.Billing.Infrastructure/Korp.Invoice.Billing.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/src/backend/Inventory/">
+    <Project Path="src/backend/Inventory/Korp.Invoice.Inventory.Api/Korp.Invoice.Inventory.Api.csproj" />
+    <Project Path="src/backend/Inventory/Korp.Invoice.Inventory.Application/Korp.Invoice.Inventory.Application.csproj" />
+    <Project Path="src/backend/Inventory/Korp.Invoice.Inventory.Domain/Korp.Invoice.Inventory.Domain.csproj" />
+    <Project Path="src/backend/Inventory/Korp.Invoice.Inventory.Infrastructure/Korp.Invoice.Inventory.Infrastructure.csproj" />
+  </Folder>
+</Solution>
