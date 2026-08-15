@@ -3,6 +3,9 @@
     <File Path="Directory.Build.props" />
     <File Path="README.md" />
   </Folder>
+  <Folder Name="/Solution Items/">
+    <File Path="docker-compose.yml" />
+  </Folder>
   <Folder Name="/src/" />
   <Folder Name="/src/backend/" />
   <Folder Name="/src/backend/Billing/">
