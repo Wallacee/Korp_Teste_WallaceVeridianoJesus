@@ -1,3 +1,4 @@
+using FluentValidation;
 using Korp.Invoice.Inventory.Application.DTOs;
 using Korp.Invoice.Inventory.Application.Interfaces;
 using Korp.Invoice.Inventory.Application.Requests;
@@ -8,12 +9,18 @@ namespace Korp.Invoice.Inventory.Application.Services;
 public sealed class ProductAppService : IProductAppService
 {
     private readonly IProductRepository _productRepository;
-    public ProductAppService(IProductRepository productRepository)
+    private readonly IValidator<CreateProductRequest> _createProductValidator;
+    public ProductAppService(
+    IProductRepository productRepository,
+    IValidator<CreateProductRequest> createProductValidator)
     {
         _productRepository = productRepository;
+        _createProductValidator = createProductValidator;
     }
     public async Task<ProductDto> CreateAsync(CreateProductRequest request, CancellationToken cancellationToken = default)
     {
+        await _createProductValidator.ValidateAndThrowAsync(request, cancellationToken);
+
         var existingProduct = await _productRepository.GetByCodeAsync(request.Code, cancellationToken);
 
         if (existingProduct is not null)
@@ -31,7 +38,7 @@ public sealed class ProductAppService : IProductAppService
 
         return product is null ? null : Map(product);
     }
-    public async Task<IReadOnlyCollection<ProductDto>> GetAllAsync(CancellationToken cancellationToken =default)
+    public async Task<IReadOnlyCollection<ProductDto>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         var products = await _productRepository.GetAllAsync(cancellationToken);
 
