@@ -8,10 +8,7 @@ public sealed class ProductTests
     [Fact]
     public void Constructor_ShouldCreateProduct_WhenDataIsValid()
     {
-        var product = new Product(
-            "PROD-001",
-            "Teclado mecânico",
-            10);
+        var product = new Product("PROD-001","Teclado mecânico",10);
 
         Assert.Equal("PROD-001", product.Code);
         Assert.Equal("Teclado mecânico", product.Description);

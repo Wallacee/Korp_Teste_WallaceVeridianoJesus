@@ -497,3 +497,11 @@ dist/
 # OS
 .DS_Store
 Thumbs.db
+
+# Test results
+TestResults/
+**/TestResults/
+
+# Code coverage
+coverage/
+**/coverage.cobertura.xml
