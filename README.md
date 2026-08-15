@@ -39,3 +39,23 @@ src/
 
 tests/
 docs/
+
+## Testes
+
+O projeto possui testes unitários para as principais regras
+de negócio e casos de uso.
+
+Para executar:
+
+dotnet test Korp.Invoice.slnx
+
+### Cobertura
+
+Os testes abrangem principalmente:
+
+- Regras de domínio de produtos;
+- Controle de saldo;
+- Validação de produtos;
+- Cadastro de produtos;
+- Conflito de código duplicado;
+- Consulta de produto inexistente.
