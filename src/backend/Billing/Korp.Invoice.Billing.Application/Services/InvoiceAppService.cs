@@ -1,4 +1,6 @@
+using FluentValidation;
 using Korp.Invoice.Billing.Application.DTOs;
+using Korp.Invoice.Billing.Application.ExternalServices.Inventory;
 using Korp.Invoice.Billing.Application.Interfaces;
 using Korp.Invoice.Billing.Application.Requests;
 using Korp.Invoice.Billing.Domain.Entities;
@@ -12,17 +14,32 @@ public sealed class InvoiceAppService : IInvoiceAppService
 {
     private readonly IInvoiceRepository _invoiceRepository;
     private readonly IInvoiceNumberGenerator _invoiceNumberGenerator;
-
+    private readonly IInventoryService _inventoryService;
+    private readonly IValidator<CreateInvoiceRequest> _createInvoiceValidator;
     public InvoiceAppService(
-        IInvoiceRepository invoiceRepository,
-        IInvoiceNumberGenerator invoiceNumberGenerator)
+     IInvoiceRepository invoiceRepository,
+     IInvoiceNumberGenerator invoiceNumberGenerator,
+     IValidator<CreateInvoiceRequest> createInvoiceValidator,
+     IInventoryService inventoryService)
     {
         _invoiceRepository = invoiceRepository;
         _invoiceNumberGenerator = invoiceNumberGenerator;
+        _createInvoiceValidator = createInvoiceValidator;
+        _inventoryService = inventoryService;
     }
 
     public async Task<FiscalInvoiceDto> CreateAsync(CreateInvoiceRequest request, CancellationToken cancellationToken = default)
     {
+        await _createInvoiceValidator.ValidateAndThrowAsync(request, cancellationToken);
+
+        foreach (var item in request.Items)
+        {
+            var product = await _inventoryService.GetProductByIdAsync(item.ProductId, cancellationToken);
+
+            if (product is null)
+                throw new NotFoundException("Produto", item.ProductId);
+        }
+
         var number = await _invoiceNumberGenerator.GetNextAsync(cancellationToken);
 
         var invoice = new FiscalInvoice(number);
