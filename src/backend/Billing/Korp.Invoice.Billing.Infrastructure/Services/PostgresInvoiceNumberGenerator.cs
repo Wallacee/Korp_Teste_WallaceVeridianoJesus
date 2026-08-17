@@ -19,7 +19,7 @@ public sealed class PostgresInvoiceNumberGenerator : IInvoiceNumberGenerator
         await using
         var command = connection.CreateCommand();
 
-        command.CommandText = """SELECT nextval('"InvoiceNumberSequence "');""";
+        command.CommandText = """SELECT nextval('public."InvoiceNumberSequence"');""";
 
         var result = await command.ExecuteScalarAsync(cancellationToken);
 
