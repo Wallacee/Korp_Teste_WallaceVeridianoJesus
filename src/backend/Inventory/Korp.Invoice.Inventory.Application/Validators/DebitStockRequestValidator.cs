@@ -1,6 +1,7 @@
 using FluentValidation;
 using Korp.Invoice.Inventory.Application.Requests;
 
+
 namespace Korp.Invoice.Inventory.Application.Validators;
 
 public sealed class DebitStockRequestValidator : AbstractValidator<DebitStockRequest>

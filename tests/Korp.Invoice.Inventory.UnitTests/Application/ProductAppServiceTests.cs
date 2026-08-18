@@ -13,6 +13,7 @@ public sealed class ProductAppServiceTests
     private readonly Mock<IProductRepository> _repositoryMock = new();
     private readonly Mock<IValidator<CreateProductRequest>> _validatorMock = new();
     private readonly Mock<IValidator<DebitStockRequest>> _debitStockValidatorMock = new();
+
     private ProductAppService CreateService()
     {
         return new ProductAppService(_repositoryMock.Object, _validatorMock.Object, _debitStockValidatorMock.Object);

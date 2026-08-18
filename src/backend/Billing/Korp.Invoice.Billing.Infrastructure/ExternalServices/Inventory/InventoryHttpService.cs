@@ -25,4 +25,16 @@ public sealed class InventoryHttpService : IInventoryService
 
         return await response.Content.ReadFromJsonAsync<InventoryProductDto>(cancellationToken);
     }
+
+    public async Task DebitStockAsync(Guid productId, int quantity, CancellationToken cancellationToken = default)
+    {
+        var request = new DebitStockRequest
+        {
+            Quantity = quantity
+        };
+
+        var response = await _httpClient.PostAsJsonAsync($"api/products/{productId}/stock/debit", request, cancellationToken);
+
+        response.EnsureSuccessStatusCode();
+    }
 }

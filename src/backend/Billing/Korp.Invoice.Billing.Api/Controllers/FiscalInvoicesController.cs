@@ -16,6 +16,7 @@ public sealed class FiscalInvoicesController : ControllerBase
     public async Task<IActionResult> CreateAsync(CreateInvoiceRequest request, CancellationToken cancellationToken)
     {
         var invoice = await _invoiceAppService.CreateAsync(request, cancellationToken);
+
         return CreatedAtAction(nameof(GetByIdAsync), new { id = invoice.Id }, invoice);
     }
     [HttpGet("{id:guid}")]
@@ -27,5 +28,11 @@ public sealed class FiscalInvoicesController : ControllerBase
     public async Task<IActionResult> GetAllAsync(CancellationToken cancellationToken)
     {
         return Ok(await _invoiceAppService.GetAllAsync(cancellationToken));
+    }
+
+    [HttpPost("{id:guid}/process")]
+    public async Task<IActionResult> ProcessAsync(Guid id, CancellationToken cancellationToken)
+    {
+        return Ok(await _invoiceAppService.ProcessAsync(id, cancellationToken));
     }
 }

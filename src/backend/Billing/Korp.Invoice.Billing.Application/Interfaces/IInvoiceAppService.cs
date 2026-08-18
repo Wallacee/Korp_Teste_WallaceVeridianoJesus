@@ -10,4 +10,5 @@ public interface IInvoiceAppService
     Task<FiscalInvoiceDto> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
 
     Task<IReadOnlyCollection<FiscalInvoiceDto>> GetAllAsync(CancellationToken cancellationToken = default);
+    Task<FiscalInvoiceDto> ProcessAsync(Guid id, CancellationToken cancellationToken = default);
 }

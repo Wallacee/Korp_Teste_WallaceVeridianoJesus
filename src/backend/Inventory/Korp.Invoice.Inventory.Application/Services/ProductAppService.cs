@@ -53,11 +53,9 @@ public sealed class ProductAppService : IProductAppService
     {
         await _debitStockValidator.ValidateAndThrowAsync(request, cancellationToken);
         var product = await _productRepository.GetByIdAsync(productId, cancellationToken) ?? throw new NotFoundException("Produto", productId);
-
         product.DebitStock(request.Quantity);
         await _productRepository.UpdateAsync(product, cancellationToken);
     }
-
     private static ProductDto Map(Product product)
     {
         return new ProductDto

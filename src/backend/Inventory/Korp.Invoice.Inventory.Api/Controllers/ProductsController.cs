@@ -29,10 +29,12 @@ public sealed class ProductsController : ControllerBase
     {
         return Ok(await _productAppService.GetAllAsync(cancellationToken));
     }
+
     [HttpPost("{id:guid}/stock/debit")]
-    public async Task<IActionResult> DebitStockAsync(Guid id, DebitStockRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> DebitStockAsync(Guid id,DebitStockRequest request,CancellationToken cancellationToken)
     {
-        await _productAppService.DebitStockAsync(id, request, cancellationToken);
+        await _productAppService.DebitStockAsync(id,request,cancellationToken);
+
         return NoContent();
     }
 }
