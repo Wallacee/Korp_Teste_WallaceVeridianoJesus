@@ -1,4 +1,5 @@
 using FluentValidation;
+using FluentValidation.Results;
 using Korp.Invoice.Inventory.Application.Requests;
 using Korp.Invoice.Inventory.Application.Services;
 using Korp.Invoice.Inventory.Domain.Entities;
@@ -47,5 +48,40 @@ public sealed class ProductAppServiceTests
         _repositoryMock.Setup(x => x.GetByIdAsync(id, It.IsAny<CancellationToken>())).ReturnsAsync((Product?)null);
         var service = CreateService();
         await Assert.ThrowsAsync<NotFoundException>(() => service.GetByIdAsync(id));
+    }
+
+    [Fact]
+    public async Task DebitStockAsync_ShouldUpdateProductStock_WhenRequestIsValid()
+    {
+        var id = Guid.NewGuid();
+        var request = new DebitStockRequest { Quantity = 5 };
+        _debitStockValidatorMock.Setup(x => x.ValidateAsync(
+            It.IsAny<ValidationContext<DebitStockRequest>>(),
+            It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new ValidationResult());
+        _repositoryMock.Setup(x => x.GetByIdAsync(id, It.IsAny<CancellationToken>())).ReturnsAsync(new Product("PROD-001", "Teclado mecânico", 10));
+        var service = CreateService();
+        await service.DebitStockAsync(id, request);
+        _repositoryMock.Verify(x => x.UpdateAsync(It.IsAny<Product>(), It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task DebitStockAsync_ShouldThrow_WhenRequestIsInvalid()
+    {
+        var id = Guid.NewGuid();
+        var request = new DebitStockRequest
+        {
+            Quantity = 0
+        };
+        _debitStockValidatorMock
+    .Setup(x => x.ValidateAsync(
+        It.IsAny<IValidationContext>(),
+        It.IsAny<CancellationToken>()))
+    .ReturnsAsync(new ValidationResult(
+    [
+        new ValidationFailure(nameof(DebitStockRequest.Quantity),"Quantidade deve ser maior que zero.")
+    ]));
+
+        var service = CreateService(); await Assert.ThrowsAsync<NotFoundException>(() => service.DebitStockAsync(id, request));
     }
 }
