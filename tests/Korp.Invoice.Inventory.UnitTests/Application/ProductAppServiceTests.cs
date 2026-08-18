@@ -11,9 +11,11 @@ public sealed class ProductAppServiceTests
 {
     private readonly Mock<IProductRepository> _repositoryMock = new();
     private readonly Mock<IValidator<CreateProductRequest>> _validatorMock = new();
+    private readonly Mock<IValidator<DebitStockRequest>> _debitStockValidator = new();
+
     private ProductAppService CreateService()
     {
-        return new ProductAppService(_repositoryMock.Object, _validatorMock.Object);
+        return new ProductAppService(_repositoryMock.Object, _validatorMock.Object, _debitStockValidator.Object);
     }
     [Fact]
     public async Task CreateAsync_ShouldCreateProduct_WhenRequestIsValid()
