@@ -11,12 +11,15 @@ public sealed class ProductAppService : IProductAppService
 {
     private readonly IProductRepository _productRepository;
     private readonly IValidator<CreateProductRequest> _createProductValidator;
+    private readonly IValidator<DebitStockRequest> _debitStockValidator;
     public ProductAppService(
     IProductRepository productRepository,
-    IValidator<CreateProductRequest> createProductValidator)
+    IValidator<CreateProductRequest> createProductValidator,
+    IValidator<DebitStockRequest> debitStockValidator)
     {
         _productRepository = productRepository;
         _createProductValidator = createProductValidator;
+        _debitStockValidator = debitStockValidator;
     }
     public async Task<ProductDto> CreateAsync(CreateProductRequest request, CancellationToken cancellationToken = default)
     {
@@ -33,9 +36,9 @@ public sealed class ProductAppService : IProductAppService
 
         return Map(product);
     }
-    public async Task<ProductDto> GetByIdAsync(Guid id,CancellationToken cancellationToken = default)
+    public async Task<ProductDto> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        var product = await _productRepository.GetByIdAsync(id,cancellationToken);
+        var product = await _productRepository.GetByIdAsync(id, cancellationToken);
 
         return product is null ? throw new NotFoundException("Produto", id) : Map(product);
     }
@@ -45,6 +48,16 @@ public sealed class ProductAppService : IProductAppService
 
         return [.. products.Select(Map)];
     }
+
+    public async Task DebitStockAsync(Guid productId, DebitStockRequest request, CancellationToken cancellationToken = default)
+    {
+        await _debitStockValidator.ValidateAndThrowAsync(request, cancellationToken);
+        var product = await _productRepository.GetByIdAsync(productId, cancellationToken) ?? throw new NotFoundException("Produto", productId);
+
+        product.DebitStock(request.Quantity);
+        await _productRepository.UpdateAsync(product, cancellationToken);
+    }
+
     private static ProductDto Map(Product product)
     {
         return new ProductDto

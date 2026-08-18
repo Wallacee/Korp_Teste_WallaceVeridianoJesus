@@ -21,4 +21,9 @@ public sealed class ProductRepository : BaseRepository<Product>, IProductReposit
         await base.AddAsync(product, cancellationToken);
         await Context.SaveChangesAsync(cancellationToken);
     }
+    public async Task UpdateAsync(Product product, CancellationToken cancellationToken = default)
+    {
+        DbSet.Update(product);
+        await Context.SaveChangesAsync(cancellationToken);
+    }
 }

@@ -8,4 +8,5 @@ public interface IProductRepository
     Task<Product?> GetByCodeAsync(string code, CancellationToken cancellationToken = default);
     Task<IReadOnlyCollection<Product>> GetAllAsync(CancellationToken cancellationToken = default);
     Task AddAsync(Product product, CancellationToken cancellationToken = default);
+    Task UpdateAsync(Product product, CancellationToken cancellationToken = default);
 }
