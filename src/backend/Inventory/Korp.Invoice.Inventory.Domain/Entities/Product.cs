@@ -7,6 +7,7 @@ public class Product : BaseEntity
     public const int DescriptionMaxLength = 200;
     public string Code { get; private set; } = string.Empty;
     public string Description { get; private set; } = string.Empty;
+    public uint Version { get; private set; }
     public int Stock { get; private set; }
     protected Product() { }
     public Product(string code, string description, int stock)

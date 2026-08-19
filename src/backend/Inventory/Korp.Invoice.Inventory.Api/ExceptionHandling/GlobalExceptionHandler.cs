@@ -25,7 +25,9 @@ public sealed class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logge
             NotFoundException => CreateProblemDetails(httpContext, StatusCodes.Status404NotFound, "Recurso não encontrado", exception.Message),
             ConflictException or InsufficientStockException => CreateProblemDetails(httpContext, StatusCodes.Status409Conflict, "Conflito de negócio", exception.Message),
             ArgumentException => CreateProblemDetails(httpContext, StatusCodes.Status400BadRequest, "Requisição inválida", exception.Message),
+            StockConcurrencyException => CreateProblemDetails(httpContext, StatusCodes.Status409Conflict, "Conflito de estoque", exception.Message),
             _ => CreateProblemDetails(httpContext, StatusCodes.Status500InternalServerError, "Erro interno", "Ocorreu um erro inesperado ao processar a requisição.")
+
         };
     }
     private static ProblemDetails CreateProblemDetails(HttpContext httpContext, int status, string title, string detail)

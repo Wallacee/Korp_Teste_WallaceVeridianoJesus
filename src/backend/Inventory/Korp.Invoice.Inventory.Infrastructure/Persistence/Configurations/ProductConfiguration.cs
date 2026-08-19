@@ -13,6 +13,7 @@ public sealed class ProductConfiguration : IEntityTypeConfiguration<Product>
         builder.Property(x => x.Code).HasMaxLength(Product.CodeMaxLength).IsRequired();
         builder.Property(x => x.Description).HasMaxLength(Product.DescriptionMaxLength).IsRequired();
         builder.Property(x => x.Stock).IsRequired();
+        builder.Property(x => x.Version).IsRowVersion();
         builder.HasIndex(x => x.Code).IsUnique();
     }
 }
