@@ -11,12 +11,10 @@
   align-items: center;
   justify-content: space-between;
   gap: 24px;
-
   margin-bottom: 24px;
 
   h1 {
     margin: 0;
-
     color: #111827;
     font-size: 28px;
     font-weight: 700;
@@ -25,7 +23,6 @@
 
   p {
     margin: 6px 0 0;
-
     color: #64748b;
     font-size: 14px;
   }
@@ -39,10 +36,8 @@
 
 .content-card {
   overflow: hidden;
-
   border: 1px solid #e5e7eb;
   border-radius: 12px;
-
   background: #fff;
 
   box-shadow:
@@ -55,9 +50,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-
   padding: 20px 20px 16px;
-
   border-bottom: 1px solid #f1f5f9;
 }
 
@@ -78,7 +71,6 @@ table {
 
 th.mat-mdc-header-cell {
   height: 52px;
-
   color: #475569;
   font-size: 12px;
   font-weight: 600;
@@ -87,7 +79,6 @@ th.mat-mdc-header-cell {
 
 td.mat-mdc-cell {
   height: 58px;
-
   color: #334155;
   font-size: 14px;
 }
@@ -160,6 +151,24 @@ tr.mat-mdc-row {
   }
 }
 
+.actions-column {
+  width: 110px;
+  text-align: center;
+}
+
+.action-buttons {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  white-space: nowrap;
+
+  button {
+    flex: 0 0 auto;
+  }
+}
+
 mat-paginator {
   border-top: 1px solid #e5e7eb;
   background: #fff;
@@ -183,9 +192,4 @@ mat-paginator {
   .search-field {
     width: 100%;
   }
-}
-
-.actions-column {
-  width: 80px;
-  text-align: center;
 }

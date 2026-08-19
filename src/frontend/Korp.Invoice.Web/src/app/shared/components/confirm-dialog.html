@@ -1,0 +1,19 @@
+<div class="dialog-container">
+  <div class="dialog-icon">
+    <mat-icon>warning</mat-icon>
+  </div>
+
+  <h2>{{ data.title }}</h2>
+
+  <p>{{ data.message }}</p>
+
+  <div class="dialog-actions">
+    <button mat-stroked-button type="button" (click)="cancel()">
+      {{ data.cancelText ?? 'Cancelar' }}
+    </button>
+
+    <button mat-flat-button type="button" class="danger-button" (click)="confirm()">
+      {{ data.confirmText ?? 'Confirmar' }}
+    </button>
+  </div>
+</div>
