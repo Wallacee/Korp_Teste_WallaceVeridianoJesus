@@ -24,12 +24,7 @@ public sealed class ProductsController : ControllerBase
     {
         return Ok(await _productAppService.GetByIdAsync(id, cancellationToken));
     }
-    [HttpGet]
-    public async Task<IActionResult> GetAllAsync(CancellationToken cancellationToken)
-    {
-        return Ok(await _productAppService.GetAllAsync(cancellationToken));
-    }
-
+    
     [HttpPost("{id:guid}/stock/debit")]
     public async Task<IActionResult> DebitStockAsync(Guid id, DebitStockRequest request, CancellationToken cancellationToken)
     {
@@ -44,5 +39,11 @@ public sealed class ProductsController : ControllerBase
         await _productAppService.ProcessStockAsync(request, cancellationToken);
 
         return NoContent();
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> SearchAsync([FromQuery] ProductSearchRequest request, CancellationToken cancellationToken)
+    {
+        return Ok(await _productAppService.SearchAsync(request, cancellationToken));
     }
 }

@@ -1,4 +1,5 @@
 using FluentValidation;
+using Korp.Invoice.Inventory.Application.Common;
 using Korp.Invoice.Inventory.Application.DTOs;
 using Korp.Invoice.Inventory.Application.Interfaces;
 using Korp.Invoice.Inventory.Application.Requests;
@@ -51,12 +52,6 @@ public sealed class ProductAppService : IProductAppService
 
         return product is null ? throw new NotFoundException("Produto", id) : Map(product);
     }
-    public async Task<IReadOnlyCollection<ProductDto>> GetAllAsync(CancellationToken cancellationToken = default)
-    {
-        var products = await _productRepository.GetAllAsync(cancellationToken);
-
-        return [.. products.Select(Map)];
-    }
 
     public async Task DebitStockAsync(Guid productId, DebitStockRequest request, CancellationToken cancellationToken = default)
     {
@@ -95,6 +90,29 @@ public sealed class ProductAppService : IProductAppService
         },
             cancellationToken);
     }
+
+    public async Task<PagedResult<ProductDto>> SearchAsync(ProductSearchRequest request, CancellationToken cancellationToken = default)
+    {
+        var page = Math.Max(request.Page, 1);
+        var pageSize = Math.Clamp(request.PageSize, 1, 100);
+
+        var (items, totalCount) = await _productRepository.SearchAsync(
+                request.Search,
+                page,
+                pageSize,
+                request.SortBy,
+                request.SortDirection,
+                cancellationToken);
+
+        return new PagedResult<ProductDto>
+        {
+            Items = [.. items.Select(Map)],
+            TotalCount = totalCount,
+            Page = page,
+            PageSize = pageSize
+        };
+    }
+
     private static ProductDto Map(Product product)
     {
         return new ProductDto
