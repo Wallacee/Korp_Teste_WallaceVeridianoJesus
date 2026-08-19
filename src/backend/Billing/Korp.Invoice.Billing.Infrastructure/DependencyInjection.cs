@@ -20,10 +20,12 @@ public static class DependencyInjection
         var inventoryBaseUrl = configuration["Services:Inventory:BaseUrl"] ??
             throw new InvalidOperationException("A URL do serviço de estoque não foi configurada.");
 
-        services.AddHttpClient<IInventoryService, InventoryHttpService>(client =>
+        services.AddHttpClient<IInventoryService, InventoryHttpService>(client => { client.BaseAddress = new Uri(inventoryBaseUrl); }).AddStandardResilienceHandler(options =>
         {
-            client.BaseAddress = new Uri(inventoryBaseUrl);
-            client.Timeout = TimeSpan.FromSeconds(5);
+            options.Retry.MaxRetryAttempts = 2;
+            options.Retry.Delay = TimeSpan.FromMilliseconds(500);
+            options.AttemptTimeout.Timeout = TimeSpan.FromSeconds(3);
+            options.TotalRequestTimeout.Timeout = TimeSpan.FromSeconds(8);
         });
 
         services.AddDbContext<BillingDbContext>(options => options.UseNpgsql(connectionString));

@@ -1,5 +1,6 @@
 using System.Net;
 using System.Net.Http.Json;
+using Korp.Invoice.Billing.Application.Exceptions;
 using Korp.Invoice.Billing.Application.ExternalServices.Inventory;
 
 
@@ -16,14 +17,21 @@ public sealed class InventoryHttpService : IInventoryService
 
     public async Task<InventoryProductDto?> GetProductByIdAsync(Guid productId, CancellationToken cancellationToken = default)
     {
-        var response = await _httpClient.GetAsync($"api/products/{productId}", cancellationToken);
+        try
+        {
+            var response = await _httpClient.GetAsync($"api/products/{productId}", cancellationToken);
 
-        if (response.StatusCode == HttpStatusCode.NotFound)
-            return null;
+            if (response.StatusCode == HttpStatusCode.NotFound)
+                return null;
 
-        response.EnsureSuccessStatusCode();
+            response.EnsureSuccessStatusCode();
 
-        return await response.Content.ReadFromJsonAsync<InventoryProductDto>(cancellationToken);
+            return await response.Content.ReadFromJsonAsync<InventoryProductDto>(cancellationToken);
+        }
+        catch (HttpRequestException exception)
+        {
+            throw new InventoryUnavailableException(exception);
+        }
     }
 
     public async Task DebitStockAsync(Guid productId, int quantity, CancellationToken cancellationToken = default)
@@ -45,15 +53,24 @@ public sealed class InventoryHttpService : IInventoryService
             OperationId = operationId,
 
             Items = [.. items
-                .Select(x => new ProcessStockItemRequest
+                .Select(item => new ProcessStockItemRequest
                 {
-                    ProductId = x.ProductId,
-                    Quantity = x.Quantity
+                    ProductId = item.ProductId,
+                    Quantity = item.Quantity
                 })]
         };
 
-        var response = await _httpClient.PostAsJsonAsync("api/products/stock/process", request, cancellationToken);
+        try
+        {
+            var response = await _httpClient.PostAsJsonAsync("api/products/stock/process", request, cancellationToken);
 
-        response.EnsureSuccessStatusCode();
+            response.EnsureSuccessStatusCode();
+        }
+        catch (HttpRequestException exception)
+        {
+            throw new InventoryUnavailableException(exception);
+        }
     }
+
+
 }

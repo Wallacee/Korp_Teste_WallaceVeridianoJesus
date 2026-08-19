@@ -1,3 +1,4 @@
+using Korp.Invoice.Billing.Api.ExceptionHandling;
 using Korp.Invoice.Billing.Application;
 using Korp.Invoice.Billing.Infrastructure;
 
@@ -10,9 +11,11 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddProblemDetails();
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
 var app = builder.Build();
-
+app.UseExceptionHandler();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
