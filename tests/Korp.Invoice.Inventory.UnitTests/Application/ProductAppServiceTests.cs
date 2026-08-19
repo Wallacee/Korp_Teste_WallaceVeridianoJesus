@@ -4,7 +4,7 @@ using Korp.Invoice.Inventory.Application.Requests;
 using Korp.Invoice.Inventory.Application.Services;
 using Korp.Invoice.Inventory.Domain.Entities;
 using Korp.Invoice.Inventory.Domain.Exceptions;
-using Korp.Invoice.Inventory.Domain.Repositories;
+using Korp.Invoice.Inventory.Domain.Interfaces;
 using Moq;
 namespace Korp.Invoice.Inventory.UnitTests.Application;
 

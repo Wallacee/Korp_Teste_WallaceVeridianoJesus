@@ -11,4 +11,5 @@ public interface IProductAppService
     Task DebitStockAsync(Guid productId, DebitStockRequest request, CancellationToken cancellationToken = default);
     Task ProcessStockAsync(ProcessStockRequest request, CancellationToken cancellationToken = default);
     Task<PagedResult<ProductDto>> SearchAsync(ProductSearchRequest request, CancellationToken cancellationToken = default);
+    Task<ProductDto> UpdateAsync(Guid id, UpdateProductRequest request, CancellationToken cancellationToken = default);
 }

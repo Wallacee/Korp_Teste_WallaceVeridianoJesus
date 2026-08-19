@@ -5,7 +5,7 @@ using Korp.Invoice.Inventory.Application.Interfaces;
 using Korp.Invoice.Inventory.Application.Requests;
 using Korp.Invoice.Inventory.Domain.Entities;
 using Korp.Invoice.Inventory.Domain.Exceptions;
-using Korp.Invoice.Inventory.Domain.Repositories;
+using Korp.Invoice.Inventory.Domain.Interfaces;
 namespace Korp.Invoice.Inventory.Application.Services;
 
 public sealed class ProductAppService : IProductAppService
@@ -16,13 +16,15 @@ public sealed class ProductAppService : IProductAppService
     private readonly IStockOperationRepository _stockOperationRepository;
     private readonly IInventoryUnitOfWork _unitOfWork;
     private readonly IValidator<ProcessStockRequest> _processStockValidator;
+    private readonly IValidator<UpdateProductRequest> _updateValidator;
     public ProductAppService(
     IProductRepository productRepository,
     IValidator<CreateProductRequest> createProductValidator,
     IValidator<DebitStockRequest> debitStockValidator,
     IStockOperationRepository stockOperationRepository,
     IInventoryUnitOfWork unitOfWork,
-    IValidator<ProcessStockRequest> processStockValidator)
+    IValidator<ProcessStockRequest> processStockValidator,
+    IValidator<UpdateProductRequest> updateValidator)
     {
         _productRepository = productRepository;
         _createProductValidator = createProductValidator;
@@ -30,6 +32,7 @@ public sealed class ProductAppService : IProductAppService
         _stockOperationRepository = stockOperationRepository;
         _unitOfWork = unitOfWork;
         _processStockValidator = processStockValidator;
+        _updateValidator = updateValidator;
     }
     public async Task<ProductDto> CreateAsync(CreateProductRequest request, CancellationToken cancellationToken = default)
     {
@@ -46,6 +49,25 @@ public sealed class ProductAppService : IProductAppService
 
         return Map(product);
     }
+
+    public async Task<ProductDto> UpdateAsync(Guid id, UpdateProductRequest request, CancellationToken cancellationToken = default)
+    {
+        await _updateValidator.ValidateAndThrowAsync(request, cancellationToken);
+
+        var product = await _productRepository.GetByIdAsync(id, cancellationToken) ?? throw new NotFoundException("Produto", id);
+        var productWithSameCode = await _productRepository.GetByCodeAsync(request.Code, cancellationToken);
+
+        if (productWithSameCode is not null && productWithSameCode.Id != id)
+            throw new ConflictException($"Já existe um produto com o código '{request.Code}'.");
+
+        product.Update(request.Code, request.Description, request.Stock);
+
+        await _productRepository.UpdateAsync(product, cancellationToken);
+
+        return Map(product);
+    }
+
+
     public async Task<ProductDto> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         var product = await _productRepository.GetByIdAsync(id, cancellationToken);

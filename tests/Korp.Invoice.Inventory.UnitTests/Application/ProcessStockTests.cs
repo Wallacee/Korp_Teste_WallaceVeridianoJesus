@@ -2,7 +2,7 @@ using FluentValidation;
 using FluentValidation.Results;
 using Korp.Invoice.Inventory.Application.Requests;
 using Korp.Invoice.Inventory.Application.Services;
-using Korp.Invoice.Inventory.Domain.Repositories;
+using Korp.Invoice.Inventory.Domain.Interfaces;
 using Moq;
 namespace Korp.Invoice.Inventory.UnitTests.Application;
 

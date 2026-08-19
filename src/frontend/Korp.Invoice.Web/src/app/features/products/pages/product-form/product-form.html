@@ -10,21 +10,27 @@
         Produtos
       </a>
 
-      <h1>Novo produto</h1>
+      <h1>
+        {{ isEditMode() ? 'Editar produto' : 'Novo produto' }}
+      </h1>
 
       <p>
-        Cadastre um novo produto no estoque.
+        {{isEditMode()? 'Atualize as informações do produto.': 'Cadastre um novo produto no estoque.'}}
       </p>
 
     </div>
   </header>
-
+  @if (isLoading()) {
+  <div class="form-loading">
+    <mat-spinner diameter="40"></mat-spinner>
+  </div>
+  } @else {
   <form class="form-card" [formGroup]="form" (ngSubmit)="save()">
 
     <div class="form-header">
 
       <div>
-        <h2>Informações do produto</h2>
+        <h2>{{isEditMode()? 'Dados do produto': 'Informações do produto'}}</h2>
 
         <p>
           Preencha os dados necessários para o cadastro.
@@ -130,7 +136,7 @@
 
       </mat-form-field>
 
-      
+
     </div>
 
     <footer class="form-actions">
@@ -148,11 +154,11 @@
         <mat-icon>save</mat-icon>
         }
 
-        Salvar produto
+        {{ isEditMode() ? 'Salvar alterações' : 'Salvar produto' }}
       </button>
 
     </footer>
 
   </form>
-
+  }
 </div>

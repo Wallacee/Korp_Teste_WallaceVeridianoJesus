@@ -50,7 +50,8 @@ export class ProductList implements OnInit {
     'code',
     'description',
     'stock',
-    'createdAtUtc'
+    'createdAtUtc',
+    'actions'
   ];
 
   pageIndex = 0;

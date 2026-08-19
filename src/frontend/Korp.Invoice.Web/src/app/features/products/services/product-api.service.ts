@@ -7,6 +7,7 @@ import { PagedResult } from '../../../core/models/paged-result.model';
 import { Product } from '../models/product.model';
 import { CreateProductRequest } from '../models/create-product-request.model';
 import { ProductSearchRequest } from '../models/product-search-request.model';
+import { UpdateProductRequest } from '../models/update-product-request.model';
 
 @Injectable({
   providedIn: 'root'
@@ -38,5 +39,9 @@ export class ProductApiService {
 
   create(request: CreateProductRequest): Observable<Product> {
     return this.http.post<Product>(this.apiUrl, request);
+  }
+
+  update(id: string, request: UpdateProductRequest): Observable<Product> {
+    return this.http.put<Product>(`${this.apiUrl}/${id}`, request);
   }
 }
