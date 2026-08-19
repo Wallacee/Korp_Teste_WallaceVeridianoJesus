@@ -59,3 +59,36 @@ Os testes abrangem principalmente:
 - Cadastro de produtos;
 - Conflito de código duplicado;
 - Consulta de produto inexistente.
+
+## Comunicação entre Frontend e Microsserviços
+
+O frontend Angular consome diretamente as APIs de Inventory e Billing,
+mantendo cada serviço responsável pelos recursos pertencentes ao seu domínio.
+
+Operações que envolvem mais de um microsserviço não são orquestradas pelo
+frontend. No processamento de uma nota fiscal, por exemplo, o Angular aciona
+o Billing Service, que coordena a operação de estoque junto ao Inventory Service.
+
+Para o escopo atual, optou-se por não introduzir um API Gateway, evitando
+complexidade adicional para apenas dois microsserviços.
+
+Em uma evolução da arquitetura, com aumento do número de serviços e
+necessidade de preocupações transversais, um API Gateway ou BFF poderia ser
+introduzido como ponto único de entrada.
+
+
+                    ┌─────────────────┐
+                    │     Angular     │
+                    └───────┬─────────┘
+                            │
+                 ┌──────────┴──────────┐
+                 │                     │
+                 ▼                     ▼
+        ┌─────────────────┐   ┌─────────────────┐
+        │ Inventory API   │   │   Billing API   │
+        └─────────────────┘   └────────┬────────┘
+                 ▲                     │
+                 │                     │
+                 └─────────────────────┘
+                    processamento
+                       de estoque
