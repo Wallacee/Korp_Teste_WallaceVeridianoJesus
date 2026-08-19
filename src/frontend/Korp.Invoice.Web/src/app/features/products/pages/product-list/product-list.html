@@ -6,10 +6,7 @@
       <p>Gerencie os produtos disponíveis no estoque.</p>
     </div>
 
-    <button
-      mat-flat-button
-      type="button"
-      class="new-product-button">
+    <button mat-flat-button type="button" routerLink="/products/new" class="new-product-button">
       <mat-icon>add</mat-icon>
       Novo produto
     </button>
@@ -19,35 +16,22 @@
 
     <div class="table-toolbar">
 
-      <mat-form-field
-        appearance="outline"
-        class="search-field"
-        subscriptSizing="dynamic">
+      <mat-form-field appearance="outline" class="search-field" subscriptSizing="dynamic">
 
         <mat-icon matPrefix>search</mat-icon>
 
-        <input
-          matInput
-          [formControl]="searchControl"
-          placeholder="Pesquisar por código ou descrição">
+        <input matInput [formControl]="searchControl" placeholder="Pesquisar por código ou descrição">
 
         @if (searchControl.value) {
-          <button
-            mat-icon-button
-            matSuffix
-            type="button"
-            aria-label="Limpar pesquisa"
-            (click)="searchControl.setValue('')">
-            <mat-icon>close</mat-icon>
-          </button>
+        <button mat-icon-button matSuffix type="button" aria-label="Limpar pesquisa"
+          (click)="searchControl.setValue('')">
+          <mat-icon>close</mat-icon>
+        </button>
         }
 
       </mat-form-field>
 
-      <button
-        mat-stroked-button
-        type="button"
-        (click)="loadProducts()">
+      <button mat-stroked-button type="button" (click)="loadProducts()">
         <mat-icon>refresh</mat-icon>
         Atualizar
       </button>
@@ -57,17 +41,12 @@
     <div class="table-wrapper">
 
       @if (isLoading()) {
-        <div class="loading-overlay">
-          <mat-spinner diameter="36"></mat-spinner>
-        </div>
+      <div class="loading-overlay">
+        <mat-spinner diameter="36"></mat-spinner>
+      </div>
       }
 
-      <table
-        mat-table
-        matSort
-        [dataSource]="products()"
-        [matSortActive]="sortBy"
-        [matSortDirection]="sortDirection"
+      <table mat-table matSort [dataSource]="products()" [matSortActive]="sortBy" [matSortDirection]="sortDirection"
         (matSortChange)="onSortChange($event)">
 
         <ng-container matColumnDef="code">
@@ -103,10 +82,7 @@
         </ng-container>
 
         <ng-container matColumnDef="createdAtUtc">
-          <th
-            mat-header-cell
-            *matHeaderCellDef
-            mat-sort-header="createdAtUtc">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header="createdAtUtc">
             Cadastrado em
           </th>
 
@@ -115,41 +91,32 @@
           </td>
         </ng-container>
 
-        <tr
-          mat-header-row
-          *matHeaderRowDef="displayedColumns">
+        <tr mat-header-row *matHeaderRowDef="displayedColumns">
         </tr>
 
-        <tr
-          mat-row
-          *matRowDef="let row; columns: displayedColumns">
+        <tr mat-row *matRowDef="let row; columns: displayedColumns">
         </tr>
 
       </table>
 
       @if (!isLoading() && products().length === 0) {
-        <div class="empty-state">
-          <div class="empty-icon">
-            <mat-icon>inventory_2</mat-icon>
-          </div>
-
-          <strong>Nenhum produto encontrado</strong>
-
-          <span>
-            Altere os filtros ou cadastre um novo produto.
-          </span>
+      <div class="empty-state">
+        <div class="empty-icon">
+          <mat-icon>inventory_2</mat-icon>
         </div>
+
+        <strong>Nenhum produto encontrado</strong>
+
+        <span>
+          Altere os filtros ou cadastre um novo produto.
+        </span>
+      </div>
       }
 
     </div>
 
-    <mat-paginator
-      [length]="totalCount()"
-      [pageIndex]="pageIndex"
-      [pageSize]="pageSize"
-      [pageSizeOptions]="[10, 20, 50]"
-      [showFirstLastButtons]="true"
-      (page)="onPageChange($event)">
+    <mat-paginator [length]="totalCount()" [pageIndex]="pageIndex" [pageSize]="pageSize"
+      [pageSizeOptions]="[10, 20, 50]" [showFirstLastButtons]="true" (page)="onPageChange($event)">
     </mat-paginator>
 
   </section>

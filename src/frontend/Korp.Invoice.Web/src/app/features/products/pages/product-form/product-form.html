@@ -1,0 +1,158 @@
+<div class="page-container">
+
+  <header class="page-header">
+    <div>
+
+      <a routerLink="/products" class="back-link">
+
+        <mat-icon>arrow_back</mat-icon>
+
+        Produtos
+      </a>
+
+      <h1>Novo produto</h1>
+
+      <p>
+        Cadastre um novo produto no estoque.
+      </p>
+
+    </div>
+  </header>
+
+  <form class="form-card" [formGroup]="form" (ngSubmit)="save()">
+
+    <div class="form-header">
+
+      <div>
+        <h2>Informações do produto</h2>
+
+        <p>
+          Preencha os dados necessários para o cadastro.
+        </p>
+      </div>
+
+    </div>
+
+    <div class="form-content">
+
+      <mat-form-field appearance="outline">
+
+        <mat-label>Código</mat-label>
+
+        <input matInput formControlName="code" maxlength="50" autocomplete="off">
+
+        @if (form.controls.code.touched &&
+        form.controls.code.hasError('required')
+        ) {
+        <mat-error>
+          O código é obrigatório.
+        </mat-error>
+        }
+
+        @if (
+        form.controls.code.touched &&
+        form.controls.code.hasError('maxlength')
+        ) {
+        <mat-error>
+          O código deve possuir no máximo 50 caracteres.
+        </mat-error>
+        }
+
+        @if (form.controls.code.hasError('server')) {
+        <mat-error>
+          {{ form.controls.code.getError('server') }}
+        </mat-error>
+        }
+
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="description-field">
+
+        <mat-label>Descrição</mat-label>
+
+        <input matInput formControlName="description" maxlength="200" autocomplete="off">
+
+        @if (
+        form.controls.description.touched &&
+        form.controls.description.hasError('required')
+        ) {
+        <mat-error>
+          A descrição é obrigatória.
+        </mat-error>
+        }
+
+        @if (
+        form.controls.description.touched &&
+        form.controls.description.hasError('maxlength')
+        ) {
+        <mat-error>
+          A descrição deve possuir no máximo 200 caracteres.
+        </mat-error>
+        }
+
+        @if (form.controls.description.hasError('server')) {
+        <mat-error>
+          {{ form.controls.description.getError('server') }}
+        </mat-error>
+        }
+
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+
+        <mat-label>Estoque inicial</mat-label>
+
+        <input matInput type="number" min="0" formControlName="stock">
+
+        @if (
+        form.controls.stock.touched &&
+        form.controls.stock.hasError('required')
+        ) {
+        <mat-error>
+          O estoque inicial é obrigatório.
+        </mat-error>
+        }
+
+        @if (
+        form.controls.stock.touched &&
+        form.controls.stock.hasError('min')
+        ) {
+        <mat-error>
+          O estoque não pode ser negativo.
+        </mat-error>
+        }
+
+        @if (form.controls.stock.hasError('server')) {
+        <mat-error>
+          {{ form.controls.stock.getError('server') }}
+        </mat-error>
+        }
+
+      </mat-form-field>
+
+      
+    </div>
+
+    <footer class="form-actions">
+
+      <button mat-stroked-button type="button" routerLink="/products" [disabled]="isSaving()">
+
+        Cancelar
+      </button>
+
+      <button mat-flat-button type="submit" [disabled]="isSaving()">
+
+        @if (isSaving()) {
+        <mat-spinner diameter="18"></mat-spinner>
+        } @else {
+        <mat-icon>save</mat-icon>
+        }
+
+        Salvar produto
+      </button>
+
+    </footer>
+
+  </form>
+
+</div>
