@@ -1,0 +1,90 @@
+<div class="app-shell">
+
+  <aside class="sidebar">
+
+    <div class="brand">
+      <div class="brand-icon">
+        K
+      </div>
+
+      <div>
+        <strong>Korp Invoice</strong>
+        <span>Gestão fiscal</span>
+      </div>
+    </div>
+
+    <nav class="navigation">
+
+      <span class="section-title">GERAL</span>
+
+      <a
+        routerLink="/"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }">
+        <mat-icon>dashboard</mat-icon>
+        Visão geral
+      </a>
+
+      <span class="section-title">ESTOQUE</span>
+
+      <a
+        routerLink="/products"
+        routerLinkActive="active">
+        <mat-icon>inventory_2</mat-icon>
+        Produtos
+      </a>
+
+      <span class="section-title">FATURAMENTO</span>
+
+      <a
+        routerLink="/invoices"
+        routerLinkActive="active">
+        <mat-icon>receipt_long</mat-icon>
+        Notas fiscais
+      </a>
+
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="environment">
+        <span class="status"></span>
+
+        <div>
+          <strong>Ambiente</strong>
+          <span>Desenvolvimento</span>
+        </div>
+      </div>
+    </div>
+
+  </aside>
+
+  <div class="content">
+
+    <header class="topbar">
+
+      <div class="topbar-title">
+        
+      </div>
+
+      <div class="topbar-actions">
+        <div class="user">
+          <div class="avatar">
+            ADM
+          </div>
+
+          <div>
+            <strong>Administrador</strong>
+            <span>Korp Invoice</span>
+          </div>
+        </div>
+      </div>
+
+    </header>
+
+    <main class="main-content">
+      <router-outlet></router-outlet>
+    </main>
+
+  </div>
+
+</div>

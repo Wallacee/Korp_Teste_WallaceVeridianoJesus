@@ -6,4 +6,6 @@ public sealed record ProductDto
     public string Code { get; init; } = string.Empty;
     public string Description { get; init; } = string.Empty;
     public int Stock { get; init; }
+    public DateTime? CreatedAtUtc { get; set; }
+
 }
