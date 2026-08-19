@@ -14,6 +14,10 @@ export const routes: Routes = [
         pathMatch: 'full'
       },
       {
+        path: 'products/new',
+        loadComponent: () => import('./features/products/pages/product-form/product-form').then(m => m.ProductForm)
+      },
+      {
         path: 'products',
         component: ProductList
       }

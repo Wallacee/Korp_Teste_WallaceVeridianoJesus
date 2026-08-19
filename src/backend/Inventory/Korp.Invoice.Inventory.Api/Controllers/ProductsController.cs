@@ -13,18 +13,18 @@ public sealed class ProductsController : ControllerBase
         _productAppService = productAppService;
     }
     [HttpPost]
-    public async Task<IActionResult> CreateAsync(CreateProductRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> CreateAsync([FromBody] CreateProductRequest request, CancellationToken cancellationToken)
     {
         var product = await _productAppService.CreateAsync(request, cancellationToken);
 
-        return CreatedAtAction(nameof(GetByIdAsync), new { id = product.Id }, product);
+        return StatusCode(StatusCodes.Status201Created, product);
     }
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         return Ok(await _productAppService.GetByIdAsync(id, cancellationToken));
     }
-    
+
     [HttpPost("{id:guid}/stock/debit")]
     public async Task<IActionResult> DebitStockAsync(Guid id, DebitStockRequest request, CancellationToken cancellationToken)
     {

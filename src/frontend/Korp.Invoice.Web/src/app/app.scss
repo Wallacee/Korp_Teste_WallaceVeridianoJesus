@@ -1,0 +1,27 @@
+/* =========================================================
+   Global notifications
+   ========================================================= */
+
+.notification-success {
+  --mdc-snackbar-container-color: #15803d!important;
+  --mdc-snackbar-supporting-text-color: #ffffff!important;
+  --mat-snack-bar-button-color: #ffffff!important;
+}
+
+.mat-mdc-snack-bar-container.notification-error {
+  --mdc-snackbar-container-color: #b91c1c;
+  --mdc-snackbar-supporting-text-color: #ffffff;
+  --mat-snack-bar-button-color: #ffffff;
+}
+
+.mat-mdc-snack-bar-container.notification-warning {
+  --mdc-snackbar-container-color: #d97706;
+  --mdc-snackbar-supporting-text-color: #ffffff;
+  --mat-snack-bar-button-color: #ffffff;
+}
+
+.mat-mdc-snack-bar-container.notification-info {
+  --mdc-snackbar-container-color: #2563eb;
+  --mdc-snackbar-supporting-text-color: #ffffff;
+  --mat-snack-bar-button-color: #ffffff;
+}

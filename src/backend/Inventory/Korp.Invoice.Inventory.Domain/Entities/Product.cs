@@ -14,8 +14,8 @@ public class Product : BaseEntity
     {
         SetCode(code);
         SetDescription(description);
-        if (stock < 0)
-            throw new ArgumentOutOfRangeException(nameof(stock), "O saldo do produto não pode ser negativo.");
+        if (stock <= 0)
+            throw new ArgumentOutOfRangeException(nameof(stock), "O quantidade inicial do produto deve ser maior que zero.");
         Stock = stock;
     }
     public void DebitStock(int quantity)

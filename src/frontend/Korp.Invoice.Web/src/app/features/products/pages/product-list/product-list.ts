@@ -16,7 +16,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ProductApiService } from '../../services/product-api.service';
 import { Product } from '../../models/product.model';
 import { ProductSearchRequest } from '../../models/product-search-request.model';
-
+import { Router, RouterLink } from '@angular/router';
 @Component({
   selector: 'app-product-list',
   standalone: true,
@@ -30,7 +30,8 @@ import { ProductSearchRequest } from '../../models/product-search-request.model'
     MatInputModule,
     MatPaginatorModule,
     MatSortModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    RouterLink
   ],
   templateUrl: './product-list.html',
   styleUrl: './product-list.scss'
@@ -57,7 +58,11 @@ export class ProductList implements OnInit {
 
   sortBy = 'code';
   sortDirection: 'asc' | 'desc' = 'asc';
+  private readonly router = inject(Router);
 
+readonly successMessage = signal<string | null>(
+  history.state?.successMessage ?? null
+);
   ngOnInit(): void {
     this.configureSearch();
     debugger
