@@ -53,4 +53,12 @@ public sealed class ProductsController : ControllerBase
         var product = await _productAppService.UpdateAsync(id, request, cancellationToken);
         return Ok(product);
     }
+
+    [HttpDelete("{id:guid}")]
+    public async Task<IActionResult> DeleteAsync(Guid id, CancellationToken cancellationToken)
+    {
+        await _productAppService.DeleteAsync(id, cancellationToken);
+
+        return NoContent();
+    }
 }

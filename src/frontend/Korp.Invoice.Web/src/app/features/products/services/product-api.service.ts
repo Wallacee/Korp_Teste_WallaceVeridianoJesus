@@ -44,4 +44,8 @@ export class ProductApiService {
   update(id: string, request: UpdateProductRequest): Observable<Product> {
     return this.http.put<Product>(`${this.apiUrl}/${id}`, request);
   }
+
+  delete(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
 }

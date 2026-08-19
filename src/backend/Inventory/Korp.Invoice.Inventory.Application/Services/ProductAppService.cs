@@ -135,6 +135,13 @@ public sealed class ProductAppService : IProductAppService
         };
     }
 
+    public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        var product = await _productRepository.GetByIdAsync(id, cancellationToken) ??
+            throw new NotFoundException("Produto", id);
+        await _productRepository.DeleteAsync(product, cancellationToken);
+    }
+
     private static ProductDto Map(Product product)
     {
         return new ProductDto

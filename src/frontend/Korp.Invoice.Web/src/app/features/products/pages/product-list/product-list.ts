@@ -17,6 +17,9 @@ import { ProductApiService } from '../../services/product-api.service';
 import { Product } from '../../models/product.model';
 import { ProductSearchRequest } from '../../models/product-search-request.model';
 import { Router, RouterLink } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
+import { NotificationService } from '../../../../shared/services/notification.service';
+import { ConfirmDialog } from '../../../../shared/components/confirm-dialog';
 @Component({
   selector: 'app-product-list',
   standalone: true,
@@ -39,13 +42,13 @@ import { Router, RouterLink } from '@angular/router';
 export class ProductList implements OnInit {
   private readonly productApiService = inject(ProductApiService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly dialog = inject(MatDialog);
+  private readonly notification = inject(NotificationService);
 
   readonly products = signal<Product[]>([]);
   readonly totalCount = signal(0);
   readonly isLoading = signal(false);
-
-  readonly searchControl = new FormControl('', {nonNullable: true});
-
+  readonly searchControl = new FormControl('', { nonNullable: true });
   readonly displayedColumns: string[] = [
     'code',
     'description',
@@ -61,9 +64,9 @@ export class ProductList implements OnInit {
   sortDirection: 'asc' | 'desc' = 'asc';
   private readonly router = inject(Router);
 
-readonly successMessage = signal<string | null>(
-  history.state?.successMessage ?? null
-);
+  readonly successMessage = signal<string | null>(
+    history.state?.successMessage ?? null
+  );
   ngOnInit(): void {
     this.configureSearch();
     debugger
@@ -132,5 +135,36 @@ readonly successMessage = signal<string | null>(
         this.pageIndex = 0;
         this.loadProducts();
       });
+  }
+
+  deleteProduct(product: Product): void {
+    const dialogRef = this.dialog.open(
+      ConfirmDialog,
+      {
+        data: {
+          title: 'Excluir produto',
+          message: `Deseja realmente excluir o produto "${product.description}"?`,
+          confirmText: 'Excluir',
+          cancelText: 'Cancelar'
+        }
+      }
+    );
+
+    dialogRef.afterClosed().subscribe(confirmed => {
+      if (!confirmed)
+        return;
+
+      this.productApiService.delete(product.id).subscribe({
+        next: () => {
+          this.notification.success('Produto excluído com sucesso.');
+
+          this.loadProducts();
+        },
+
+        error: error => {
+          this.notification.error(error.error?.detail ?? 'Não foi possível excluir o produto.');
+        }
+      });
+    });
   }
 }
