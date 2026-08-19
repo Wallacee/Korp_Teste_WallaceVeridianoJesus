@@ -43,9 +43,7 @@ export class ProductList implements OnInit {
   readonly totalCount = signal(0);
   readonly isLoading = signal(false);
 
-  readonly searchControl = new FormControl('', {
-    nonNullable: true
-  });
+  readonly searchControl = new FormControl('', {nonNullable: true});
 
   readonly displayedColumns: string[] = [
     'code',
@@ -62,6 +60,7 @@ export class ProductList implements OnInit {
 
   ngOnInit(): void {
     this.configureSearch();
+    debugger
     this.loadProducts();
   }
 

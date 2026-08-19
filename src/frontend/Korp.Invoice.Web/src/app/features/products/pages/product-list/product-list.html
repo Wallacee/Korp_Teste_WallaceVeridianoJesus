@@ -1,6 +1,6 @@
 <div class="page-container">
 
-  <div class="page-header">
+  <header class="page-header">
     <div>
       <h1>Produtos</h1>
       <p>Gerencie os produtos disponíveis no estoque.</p>
@@ -8,140 +8,150 @@
 
     <button
       mat-flat-button
-      type="button">
+      type="button"
+      class="new-product-button">
       <mat-icon>add</mat-icon>
       Novo produto
     </button>
-  </div>
+  </header>
 
-  <div class="filters">
-    <mat-form-field
-      appearance="outline"
-      class="search-field">
+  <section class="content-card">
 
-      <mat-label>Pesquisar</mat-label>
+    <div class="table-toolbar">
 
-      <input
-        matInput
-        [formControl]="searchControl"
-        placeholder="Código ou descrição">
+      <mat-form-field
+        appearance="outline"
+        class="search-field"
+        subscriptSizing="dynamic">
 
-      <mat-icon matSuffix>
-        search
-      </mat-icon>
+        <mat-icon matPrefix>search</mat-icon>
 
-    </mat-form-field>
-  </div>
+        <input
+          matInput
+          [formControl]="searchControl"
+          placeholder="Pesquisar por código ou descrição">
 
-  <div class="table-container">
+        @if (searchControl.value) {
+          <button
+            mat-icon-button
+            matSuffix
+            type="button"
+            aria-label="Limpar pesquisa"
+            (click)="searchControl.setValue('')">
+            <mat-icon>close</mat-icon>
+          </button>
+        }
 
-    @if (isLoading()) {
-      <div class="loading-overlay">
-        <mat-spinner diameter="40"></mat-spinner>
-      </div>
-    }
+      </mat-form-field>
 
-    <table
-      mat-table
-      matSort
-      [dataSource]="products()"
-      [matSortActive]="sortBy"
-      [matSortDirection]="sortDirection"
-      (matSortChange)="onSortChange($event)">
+      <button
+        mat-stroked-button
+        type="button"
+        (click)="loadProducts()">
+        <mat-icon>refresh</mat-icon>
+        Atualizar
+      </button>
 
-      <ng-container matColumnDef="code">
-        <th
-          mat-header-cell
-          *matHeaderCellDef
-          mat-sort-header="code">
-          Código
-        </th>
+    </div>
 
-        <td
-          mat-cell
-          *matCellDef="let product">
-          {{ product.code }}
-        </td>
-      </ng-container>
+    <div class="table-wrapper">
 
-      <ng-container matColumnDef="description">
-        <th
-          mat-header-cell
-          *matHeaderCellDef
-          mat-sort-header="description">
-          Descrição
-        </th>
+      @if (isLoading()) {
+        <div class="loading-overlay">
+          <mat-spinner diameter="36"></mat-spinner>
+        </div>
+      }
 
-        <td
-          mat-cell
-          *matCellDef="let product">
-          {{ product.description }}
-        </td>
-      </ng-container>
+      <table
+        mat-table
+        matSort
+        [dataSource]="products()"
+        [matSortActive]="sortBy"
+        [matSortDirection]="sortDirection"
+        (matSortChange)="onSortChange($event)">
 
-      <ng-container matColumnDef="stock">
-        <th
-          mat-header-cell
-          *matHeaderCellDef
-          mat-sort-header="stock">
-          Saldo
-        </th>
+        <ng-container matColumnDef="code">
+          <th *matHeaderCellDef mat-sort-header="code">
+            Código
+          </th>
 
-        <td
-          mat-cell
-          *matCellDef="let product">
-          {{ product.stock }}
-        </td>
-      </ng-container>
+          <td mat-cell *matCellDef="let product">
+            <span class="product-code">
+              {{ product.code }}
+            </span>
+          </td>
+        </ng-container>
 
-      <ng-container matColumnDef="createdAtUtc">
-        <th
-          mat-header-cell
-          *matHeaderCellDef
-          mat-sort-header="createdAtUtc">
-          Cadastrado em
-        </th>
+        <ng-container matColumnDef="description">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header="description">
+            Descrição
+          </th>
 
-        <td
-          mat-cell
-          *matCellDef="let product">
-          {{ product.createdAtUtc | date:'dd/MM/yyyy HH:mm' }}
-        </td>
-      </ng-container>
+          <td mat-cell *matCellDef="let product">
+            {{ product.description }}
+          </td>
+        </ng-container>
 
-      <tr
-        mat-header-row
-        *matHeaderRowDef="displayedColumns">
-      </tr>
+        <ng-container matColumnDef="stock">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header="stock">
+            Saldo
+          </th>
 
-      <tr
-        mat-row
-        *matRowDef="let row; columns: displayedColumns">
-      </tr>
+          <td mat-cell *matCellDef="let product">
+            {{ product.stock }}
+          </td>
+        </ng-container>
 
-    </table>
+        <ng-container matColumnDef="createdAtUtc">
+          <th
+            mat-header-cell
+            *matHeaderCellDef
+            mat-sort-header="createdAtUtc">
+            Cadastrado em
+          </th>
 
-    @if (!isLoading() && products().length === 0) {
-      <div class="empty-state">
-        <mat-icon>inventory_2</mat-icon>
+          <td mat-cell *matCellDef="let product">
+            {{ product.createdAtUtc | date:'dd/MM/yyyy HH:mm' }}
+          </td>
+        </ng-container>
 
-        <strong>Nenhum produto encontrado</strong>
+        <tr
+          mat-header-row
+          *matHeaderRowDef="displayedColumns">
+        </tr>
 
-        <span>
-          Altere os filtros ou cadastre um novo produto.
-        </span>
-      </div>
-    }
+        <tr
+          mat-row
+          *matRowDef="let row; columns: displayedColumns">
+        </tr>
+
+      </table>
+
+      @if (!isLoading() && products().length === 0) {
+        <div class="empty-state">
+          <div class="empty-icon">
+            <mat-icon>inventory_2</mat-icon>
+          </div>
+
+          <strong>Nenhum produto encontrado</strong>
+
+          <span>
+            Altere os filtros ou cadastre um novo produto.
+          </span>
+        </div>
+      }
+
+    </div>
 
     <mat-paginator
       [length]="totalCount()"
       [pageIndex]="pageIndex"
       [pageSize]="pageSize"
-      [pageSizeOptions]="[5, 10, 20, 50]"
+      [pageSizeOptions]="[10, 20, 50]"
       [showFirstLastButtons]="true"
       (page)="onPageChange($event)">
     </mat-paginator>
 
-  </div>
+  </section>
 
 </div>

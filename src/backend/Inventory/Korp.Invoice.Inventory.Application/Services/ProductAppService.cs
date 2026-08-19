@@ -120,7 +120,8 @@ public sealed class ProductAppService : IProductAppService
             Id = product.Id,
             Code = product.Code,
             Description = product.Description,
-            Stock = product.Stock
+            Stock = product.Stock,
+            CreatedAtUtc = product.CreatedAtUtc
         };
     }
 }
