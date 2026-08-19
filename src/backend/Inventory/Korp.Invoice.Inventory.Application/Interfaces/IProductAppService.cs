@@ -12,4 +12,5 @@ public interface IProductAppService
     Task ProcessStockAsync(ProcessStockRequest request, CancellationToken cancellationToken = default);
     Task<PagedResult<ProductDto>> SearchAsync(ProductSearchRequest request, CancellationToken cancellationToken = default);
     Task<ProductDto> UpdateAsync(Guid id, UpdateProductRequest request, CancellationToken cancellationToken = default);
+    Task DeleteAsync(Guid id, CancellationToken cancellationToken = default);
 }
