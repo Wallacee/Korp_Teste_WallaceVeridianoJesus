@@ -46,4 +46,11 @@ public sealed class ProductsController : ControllerBase
     {
         return Ok(await _productAppService.SearchAsync(request, cancellationToken));
     }
+
+    [HttpPut("{id:guid}")]
+    public async Task<IActionResult> UpdateAsync(Guid id, [FromBody] UpdateProductRequest request, CancellationToken cancellationToken)
+    {
+        var product = await _productAppService.UpdateAsync(id, request, cancellationToken);
+        return Ok(product);
+    }
 }

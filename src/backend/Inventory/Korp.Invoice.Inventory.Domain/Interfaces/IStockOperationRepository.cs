@@ -1,6 +1,6 @@
 using Korp.Invoice.Inventory.Domain.Entities;
 
-namespace Korp.Invoice.Inventory.Domain.Repositories;
+namespace Korp.Invoice.Inventory.Domain.Interfaces;
 
 public interface IStockOperationRepository
 {

@@ -1,4 +1,4 @@
-namespace Korp.Invoice.Inventory.Domain.Repositories;
+namespace Korp.Invoice.Inventory.Domain.Interfaces;
 
 public interface IInventoryUnitOfWork
 {

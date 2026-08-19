@@ -1,5 +1,5 @@
 using Korp.Invoice.Inventory.Domain.Exceptions;
-using Korp.Invoice.Inventory.Domain.Repositories;
+using Korp.Invoice.Inventory.Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace Korp.Invoice.Inventory.Infrastructure.Persistence;
