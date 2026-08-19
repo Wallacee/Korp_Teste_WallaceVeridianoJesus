@@ -66,15 +66,15 @@ public sealed class InvoiceAppService : IInvoiceAppService
         return [.. invoices.Select(Map)];
     }
 
-    public async Task<FiscalInvoiceDto> ProcessAsync(Guid id, CancellationToken cancellationToken = default)
+    public async Task<FiscalInvoiceDto> ProcessAsync(Guid id, CancellationToken cancellationToken =
+    default)
     {
         var invoice = await _invoiceRepository.GetByIdAsync(id, cancellationToken) ?? throw new NotFoundException("Nota fiscal", id);
-
         invoice.EnsureCanBeProcessed();
 
-        foreach (var item in invoice.Items)
-            await _inventoryService.DebitStockAsync(item.ProductId, item.Quantity, cancellationToken);
+        var stockItems = invoice.Items.Select(item => new InventoryStockItem(item.ProductId, item.Quantity)).ToList();
 
+        await _inventoryService.ProcessStockAsync(invoice.Id, stockItems, cancellationToken);
         invoice.Close();
 
         await _invoiceRepository.UpdateAsync(invoice, cancellationToken);

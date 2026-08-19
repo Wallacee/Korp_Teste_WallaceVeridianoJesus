@@ -26,4 +26,10 @@ public sealed class ProductRepository : BaseRepository<Product>, IProductReposit
         DbSet.Update(product);
         await Context.SaveChangesAsync(cancellationToken);
     }
+    public async Task<IReadOnlyCollection<Product>> GetByIdsAsync(IEnumerable<Guid> ids, CancellationToken cancellationToken = default)
+    {
+        var productIds = ids.Distinct().ToList();
+
+        return await DbSet.Where(x => productIds.Contains(x.Id)).ToListAsync(cancellationToken);
+    }
 }

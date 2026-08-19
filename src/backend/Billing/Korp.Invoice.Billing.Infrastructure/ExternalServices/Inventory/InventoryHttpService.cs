@@ -37,4 +37,23 @@ public sealed class InventoryHttpService : IInventoryService
 
         response.EnsureSuccessStatusCode();
     }
+
+    public async Task ProcessStockAsync(Guid operationId, IReadOnlyCollection<InventoryStockItem> items, CancellationToken cancellationToken = default)
+    {
+        var request = new ProcessStockRequest
+        {
+            OperationId = operationId,
+
+            Items = [.. items
+                .Select(x => new ProcessStockItemRequest
+                {
+                    ProductId = x.ProductId,
+                    Quantity = x.Quantity
+                })]
+        };
+
+        var response = await _httpClient.PostAsJsonAsync("api/products/stock/process", request, cancellationToken);
+
+        response.EnsureSuccessStatusCode();
+    }
 }

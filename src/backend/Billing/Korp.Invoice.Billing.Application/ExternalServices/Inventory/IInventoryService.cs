@@ -4,5 +4,5 @@ public interface IInventoryService
 {
     Task<InventoryProductDto?> GetProductByIdAsync(Guid productId, CancellationToken cancellationToken = default);
 
-    Task DebitStockAsync(Guid productId, int quantity, CancellationToken cancellationToken = default);
+    Task ProcessStockAsync(Guid operationId, IReadOnlyCollection<InventoryStockItem> items, CancellationToken cancellationToken = default);
 }

@@ -12,14 +12,23 @@ public sealed class ProductAppService : IProductAppService
     private readonly IProductRepository _productRepository;
     private readonly IValidator<CreateProductRequest> _createProductValidator;
     private readonly IValidator<DebitStockRequest> _debitStockValidator;
+    private readonly IStockOperationRepository _stockOperationRepository;
+    private readonly IInventoryUnitOfWork _unitOfWork;
+    private readonly IValidator<ProcessStockRequest> _processStockValidator;
     public ProductAppService(
     IProductRepository productRepository,
     IValidator<CreateProductRequest> createProductValidator,
-    IValidator<DebitStockRequest> debitStockValidator)
+    IValidator<DebitStockRequest> debitStockValidator,
+    IStockOperationRepository stockOperationRepository,
+    IInventoryUnitOfWork unitOfWork,
+    IValidator<ProcessStockRequest> processStockValidator)
     {
         _productRepository = productRepository;
         _createProductValidator = createProductValidator;
         _debitStockValidator = debitStockValidator;
+        _stockOperationRepository = stockOperationRepository;
+        _unitOfWork = unitOfWork;
+        _processStockValidator = processStockValidator;
     }
     public async Task<ProductDto> CreateAsync(CreateProductRequest request, CancellationToken cancellationToken = default)
     {
@@ -55,6 +64,36 @@ public sealed class ProductAppService : IProductAppService
         var product = await _productRepository.GetByIdAsync(productId, cancellationToken) ?? throw new NotFoundException("Produto", productId);
         product.DebitStock(request.Quantity);
         await _productRepository.UpdateAsync(product, cancellationToken);
+    }
+
+    public async Task ProcessStockAsync(ProcessStockRequest request, CancellationToken cancellationToken = default)
+    {
+        await _processStockValidator.ValidateAndThrowAsync(request, cancellationToken);
+        var alreadyProcessed = await _stockOperationRepository.ExistsAsync(request.OperationId, cancellationToken);
+
+        if (alreadyProcessed)
+            return;
+
+        await _unitOfWork.ExecuteInTransactionAsync(async ct =>
+        {
+
+            var productIds = request.Items.Select(x => x.ProductId).Distinct().ToList();
+            var products = await _productRepository.GetByIdsAsync(productIds, ct);
+
+            if (products.Count != productIds.Count)
+            {
+                var foundIds = products.Select(x => x.Id).ToHashSet();
+                var missingId = productIds.First(x => !foundIds.Contains(x));
+                throw new NotFoundException("Produto", missingId);
+            }
+            foreach (var item in request.Items)
+            {
+                var product = products.First(x => x.Id == item.ProductId);
+                product.DebitStock(item.Quantity);
+            }
+            await _stockOperationRepository.AddAsync(new StockOperation(request.OperationId), ct);
+        },
+            cancellationToken);
     }
     private static ProductDto Map(Product product)
     {
