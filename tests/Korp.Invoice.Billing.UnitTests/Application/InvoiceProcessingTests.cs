@@ -1,0 +1,85 @@
+using Korp.Invoice.Billing.Application.Exceptions;
+using Korp.Invoice.Billing.Application.ExternalServices.Inventory;
+using Korp.Invoice.Billing.Application.Services;
+using Korp.Invoice.Billing.Domain.Entities;
+using Korp.Invoice.Billing.Domain.Enums;
+using Korp.Invoice.Billing.Domain.Exceptions;
+using Korp.Invoice.Billing.Domain.Repositories;
+using Korp.Invoice.Billing.Domain.Services;
+using Korp.Invoice.Inventory.Domain.Exceptions;
+using Moq;
+
+namespace Korp.Invoice.Billing.UnitTests.Application;
+
+public sealed class InvoiceProcessingTests
+{
+    private readonly Mock<IInvoiceRepository> _invoiceRepositoryMock = new();
+    private readonly Mock<IInvoiceNumberGenerator> _invoiceNumberGeneratorMock = new();
+    private readonly Mock<IInventoryService> _inventoryServiceMock = new();
+    [Fact]
+    public async Task ProcessAsync_ShouldProcessStockAndCloseInvoice()
+    {
+        var productId = Guid.NewGuid();
+        var invoice = new FiscalInvoice(1);
+
+        invoice.AddItem(productId, 2);
+
+        _invoiceRepositoryMock.Setup(x => x.GetByIdAsync(invoice.Id, It.IsAny<CancellationToken>())).ReturnsAsync(invoice);
+        _inventoryServiceMock.Setup(x => x.ProcessStockAsync(invoice.Id, It.IsAny<IReadOnlyCollection<InventoryStockItem>>(), It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
+
+        var service = CreateService();
+        var result = await service.ProcessAsync(invoice.Id);
+
+        Assert.Equal(InvoiceStatus.Closed, result.Status);
+
+        _inventoryServiceMock.Verify(x => x.ProcessStockAsync(invoice.Id, It.Is<IReadOnlyCollection<InventoryStockItem>>(items => items.Count == 1 && items.First().ProductId == productId && items.First().Quantity == 2), It.IsAny<CancellationToken>()), Times.Once);
+        _invoiceRepositoryMock.Verify(x => x.UpdateAsync(invoice, It.IsAny<CancellationToken>()), Times.Once);
+    }
+    [Fact]
+    public async Task ProcessAsync_ShouldKeepInvoiceOpen_WhenInventoryFails()
+    {
+        var invoice = new FiscalInvoice(1);
+        invoice.AddItem(Guid.NewGuid(), 2);
+
+        _invoiceRepositoryMock.Setup(x => x.GetByIdAsync(invoice.Id, It.IsAny<CancellationToken>())).ReturnsAsync(invoice);
+        _inventoryServiceMock.Setup(x => x.ProcessStockAsync(invoice.Id, It.IsAny<IReadOnlyCollection<InventoryStockItem>>(), It.IsAny<CancellationToken>())).ThrowsAsync(new InventoryUnavailableException());
+
+        var service = CreateService();
+
+        await Assert.ThrowsAsync<InventoryUnavailableException>(() => service.ProcessAsync(invoice.Id));
+
+        Assert.Equal(InvoiceStatus.Open, invoice.Status);
+
+        _invoiceRepositoryMock.Verify(x => x.UpdateAsync(It.IsAny<FiscalInvoice>(), It.IsAny<CancellationToken>()), Times.Never);
+    }
+    [Fact]
+    public async Task ProcessAsync_ShouldNotCallInventory_WhenInvoiceIsClosed()
+    {
+        var invoice = new FiscalInvoice(1);
+        invoice.AddItem(Guid.NewGuid(), 2);
+        invoice.Close();
+
+        _invoiceRepositoryMock.Setup(x => x.GetByIdAsync(invoice.Id, It.IsAny<CancellationToken>())).ReturnsAsync(invoice);
+
+        var service = CreateService();
+        await Assert.ThrowsAsync<InvoiceAlreadyClosedException>(() => service.ProcessAsync(invoice.Id));
+
+        _inventoryServiceMock.Verify(x => x.ProcessStockAsync(It.IsAny<Guid>(), It.IsAny<IReadOnlyCollection<InventoryStockItem>>(), It.IsAny<CancellationToken>()), Times.Never);
+        _invoiceRepositoryMock.Verify(x => x.UpdateAsync(It.IsAny<FiscalInvoice>(), It.IsAny<CancellationToken>()), Times.Never);
+    }
+    [Fact]
+    public async Task ProcessAsync_ShouldThrow_WhenInvoiceDoesNotExist()
+    {
+        var invoiceId = Guid.NewGuid();
+        _invoiceRepositoryMock.Setup(x => x.GetByIdAsync(invoiceId, It.IsAny<CancellationToken>())).ReturnsAsync((FiscalInvoice?)null);
+
+        var service = CreateService();
+
+        await Assert.ThrowsAsync<NotFoundException>(() => service.ProcessAsync(invoiceId));
+        _inventoryServiceMock.Verify(x => x.ProcessStockAsync(It.IsAny<Guid>(), It.IsAny<IReadOnlyCollection<InventoryStockItem>>(), It.IsAny<CancellationToken>()), Times.Never);
+    }
+    private InvoiceAppService CreateService()
+    {
+        return new InvoiceAppService(_invoiceRepositoryMock.Object, _invoiceNumberGeneratorMock.Object, null!, _inventoryServiceMock.Object);
+    }
+}
