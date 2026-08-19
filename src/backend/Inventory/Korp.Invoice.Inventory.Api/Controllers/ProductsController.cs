@@ -31,9 +31,17 @@ public sealed class ProductsController : ControllerBase
     }
 
     [HttpPost("{id:guid}/stock/debit")]
-    public async Task<IActionResult> DebitStockAsync(Guid id,DebitStockRequest request,CancellationToken cancellationToken)
+    public async Task<IActionResult> DebitStockAsync(Guid id, DebitStockRequest request, CancellationToken cancellationToken)
     {
-        await _productAppService.DebitStockAsync(id,request,cancellationToken);
+        await _productAppService.DebitStockAsync(id, request, cancellationToken);
+
+        return NoContent();
+    }
+
+    [HttpPost("stock/process")]
+    public async Task<IActionResult> ProcessStockAsync(ProcessStockRequest request, CancellationToken cancellationToken)
+    {
+        await _productAppService.ProcessStockAsync(request, cancellationToken);
 
         return NoContent();
     }
