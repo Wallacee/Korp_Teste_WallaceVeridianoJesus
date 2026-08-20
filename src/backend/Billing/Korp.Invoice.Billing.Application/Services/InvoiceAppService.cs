@@ -7,6 +7,7 @@ using Korp.Invoice.Billing.Domain.Entities;
 using Korp.Invoice.Billing.Domain.Repositories;
 using Korp.Invoice.Billing.Domain.Services;
 using Korp.Invoice.Inventory.Domain.Exceptions;
+using Korp.Invoice.Shared.Pagination;
 
 namespace Korp.Invoice.Billing.Application.Services;
 
@@ -26,6 +27,19 @@ public sealed class InvoiceAppService : IInvoiceAppService
         _invoiceNumberGenerator = invoiceNumberGenerator;
         _createInvoiceValidator = createInvoiceValidator;
         _inventoryService = inventoryService;
+    }
+    public async Task<PagedResult<FiscalInvoiceDto>> SearchAsync(InvoiceSearchRequest request, CancellationToken cancellationToken = default)
+    {
+        var page = Math.Max(request.Page, 1);
+        var pageSize = Math.Clamp(request.PageSize, 1, 100);
+        var (items, totalCount) = await _invoiceRepository.SearchAsync(request.Search, page, pageSize, request.SortBy ?? "number", request.SortDirection, cancellationToken);
+        return new PagedResult<FiscalInvoiceDto>
+        {
+            Items = [.. items.Select(Map)],
+            TotalCount = totalCount,
+            Page = page,
+            PageSize = pageSize
+        };
     }
 
     public async Task<FiscalInvoiceDto> CreateAsync(CreateInvoiceRequest request, CancellationToken cancellationToken = default)
@@ -59,12 +73,7 @@ public sealed class InvoiceAppService : IInvoiceAppService
         return invoice is null ? throw new NotFoundException("Nota fiscal", id) : Map(invoice);
     }
 
-    public async Task<IReadOnlyCollection<FiscalInvoiceDto>> GetAllAsync(CancellationToken cancellationToken = default)
-    {
-        var invoices = await _invoiceRepository.GetAllAsync(cancellationToken);
-
-        return [.. invoices.Select(Map)];
-    }
+    
 
     public async Task<FiscalInvoiceDto> ProcessAsync(Guid id, CancellationToken cancellationToken =
     default)

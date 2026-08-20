@@ -22,6 +22,9 @@ export const routes: Routes = [
         loadComponent: () => import('./features/products/pages/product-form/product-form').then(m => m.ProductForm)
       },
       {
+        path: 'invoices',
+        loadComponent: () =>import('./features/invoices/pages/invoice-list/invoice-list').then(m => m.InvoiceList)
+      }, {
         path: 'products',
         component: ProductList
       }

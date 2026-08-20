@@ -12,6 +12,13 @@ public sealed class FiscalInvoicesController : ControllerBase
     {
         _invoiceAppService = invoiceAppService;
     }
+
+    [HttpGet]
+    public async Task<IActionResult> SearchAsync([FromQuery] InvoiceSearchRequest request, CancellationToken cancellationToken)
+    {
+        return Ok(await _invoiceAppService.SearchAsync(request, cancellationToken));
+    }
+
     [HttpPost]
     public async Task<IActionResult> CreateAsync(CreateInvoiceRequest request, CancellationToken cancellationToken)
     {
@@ -24,12 +31,7 @@ public sealed class FiscalInvoicesController : ControllerBase
     {
         return Ok(await _invoiceAppService.GetByIdAsync(id, cancellationToken));
     }
-    [HttpGet]
-    public async Task<IActionResult> GetAllAsync(CancellationToken cancellationToken)
-    {
-        return Ok(await _invoiceAppService.GetAllAsync(cancellationToken));
-    }
-
+    
     [HttpPost("{id:guid}/process")]
     public async Task<IActionResult> ProcessAsync(Guid id, CancellationToken cancellationToken)
     {

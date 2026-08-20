@@ -1,11 +1,11 @@
 using FluentValidation;
-using Korp.Invoice.Inventory.Application.Common;
 using Korp.Invoice.Inventory.Application.DTOs;
 using Korp.Invoice.Inventory.Application.Interfaces;
 using Korp.Invoice.Inventory.Application.Requests;
 using Korp.Invoice.Inventory.Domain.Entities;
 using Korp.Invoice.Inventory.Domain.Exceptions;
 using Korp.Invoice.Inventory.Domain.Interfaces;
+using Korp.Invoice.Shared.Pagination;
 namespace Korp.Invoice.Inventory.Application.Services;
 
 public sealed class ProductAppService : IProductAppService
@@ -118,13 +118,7 @@ public sealed class ProductAppService : IProductAppService
         var page = Math.Max(request.Page, 1);
         var pageSize = Math.Clamp(request.PageSize, 1, 100);
 
-        var (items, totalCount) = await _productRepository.SearchAsync(
-                request.Search,
-                page,
-                pageSize,
-                request.SortBy,
-                request.SortDirection,
-                cancellationToken);
+        var (items, totalCount) = await _productRepository.SearchAsync(request.Search,page,pageSize,request.SortBy,request.SortDirection,cancellationToken);
 
         return new PagedResult<ProductDto>
         {

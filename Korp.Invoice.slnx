@@ -20,6 +20,9 @@
     <Project Path="src/backend/Inventory/Korp.Invoice.Inventory.Domain/Korp.Invoice.Inventory.Domain.csproj" />
     <Project Path="src/backend/Inventory/Korp.Invoice.Inventory.Infrastructure/Korp.Invoice.Inventory.Infrastructure.csproj" />
   </Folder>
+  <Folder Name="/src/backend/Shared/">
+    <Project Path="src/backend/Shared/Korp.Invoice.Shared/Korp.Invoice.Shared.csproj" />
+  </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/Korp.Invoice.Billing.UnitTests/Korp.Invoice.Billing.UnitTests.csproj" />
     <Project Path="tests/Korp.Invoice.Inventory.UnitTests/Korp.Invoice.Inventory.UnitTests.csproj" />

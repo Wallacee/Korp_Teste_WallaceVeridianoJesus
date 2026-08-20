@@ -15,6 +15,8 @@ public sealed class ProcessStockTests
     private readonly Mock<IValidator<CreateProductRequest>> _createProductValidatorMock = new();
     private readonly Mock<IValidator<DebitStockRequest>> _debitStockValidatorMock = new();
     private readonly Mock<IValidator<ProcessStockRequest>> _processStockValidatorMock = new();
+    private readonly Mock<IValidator<UpdateProductRequest>> _updateValidatorMock = new();
+
 
     [Fact]
     public async Task ProcessStockAsync_ShouldReturnWithoutChanges_WhenOperationWasAlreadyProcessed()
@@ -44,6 +46,7 @@ public sealed class ProcessStockTests
             _debitStockValidatorMock.Object,
             _stockOperationRepositoryMock.Object,
             _unitOfWorkMock.Object,
-            _processStockValidatorMock.Object);
+            _processStockValidatorMock.Object,
+            _updateValidatorMock.Object);
     }
 }
