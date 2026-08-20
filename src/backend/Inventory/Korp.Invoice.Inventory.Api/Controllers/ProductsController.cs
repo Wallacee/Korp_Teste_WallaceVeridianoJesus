@@ -61,4 +61,12 @@ public sealed class ProductsController : ControllerBase
 
         return NoContent();
     }
+
+    [HttpPost("by-ids")]
+    public async Task<IActionResult> GetByIdsAsync([FromBody] GetProductsByIdsRequest request, CancellationToken cancellationToken)
+    {
+        var products = await _productAppService.GetByIdsAsync(request.Ids, cancellationToken);
+
+        return Ok(products);
+    }
 }

@@ -96,8 +96,11 @@
 
             <div class="action-buttons">
 
-              <button mat-icon-button type="button" aria-label="Visualizar nota">
+              <button mat-icon-button type="button" [routerLink]="['/invoices', invoice.id]"
+                aria-label="Visualizar nota">
+
                 <mat-icon>visibility</mat-icon>
+
               </button>
 
               @if (invoice.status === 1) {
