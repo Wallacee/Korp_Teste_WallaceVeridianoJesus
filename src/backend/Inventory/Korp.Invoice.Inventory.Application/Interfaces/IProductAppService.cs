@@ -1,6 +1,6 @@
-using Korp.Invoice.Inventory.Application.Common;
 using Korp.Invoice.Inventory.Application.DTOs;
 using Korp.Invoice.Inventory.Application.Requests;
+using Korp.Invoice.Shared.Pagination;
 
 namespace Korp.Invoice.Inventory.Application.Interfaces;
 

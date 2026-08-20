@@ -12,6 +12,13 @@ public sealed class FiscalInvoicesController : ControllerBase
     {
         _invoiceAppService = invoiceAppService;
     }
+
+    [HttpGet]
+    public async Task<IActionResult> SearchAsync([FromQuery] InvoiceSearchRequest request, CancellationToken cancellationToken)
+    {
+        return Ok(await _invoiceAppService.SearchAsync(request, cancellationToken));
+    }
+
     [HttpPost]
     public async Task<IActionResult> CreateAsync(CreateInvoiceRequest request, CancellationToken cancellationToken)
     {

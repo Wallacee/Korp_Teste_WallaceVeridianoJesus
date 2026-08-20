@@ -9,4 +9,5 @@ public interface IInvoiceRepository
     Task<IReadOnlyCollection<FiscalInvoice>> GetAllAsync(CancellationToken cancellationToken = default);
     Task AddAsync(FiscalInvoice invoice, CancellationToken cancellationToken = default);
     Task UpdateAsync(FiscalInvoice invoice, CancellationToken cancellationToken = default);
+    Task<(IReadOnlyCollection<FiscalInvoice> Items, int TotalCount)> SearchAsync(string? search, int page, int pageSize, string sortBy, string sortDirection, CancellationToken cancellationToken = default);
 }

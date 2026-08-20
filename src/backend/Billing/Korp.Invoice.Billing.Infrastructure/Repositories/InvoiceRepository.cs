@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using Korp.Invoice.Billing.Domain.Entities;
 using Korp.Invoice.Billing.Domain.Repositories;
 using Korp.Invoice.Billing.Infrastructure.Persistence;
@@ -23,4 +24,32 @@ public sealed class InvoiceRepository : BaseRepository<FiscalInvoice>, IInvoiceR
         DbSet.Update(invoice);
         await Context.SaveChangesAsync(cancellationToken);
     }
+
+    public Task<(IReadOnlyCollection<FiscalInvoice> Items, int TotalCount)> SearchAsync(
+        string? search
+        , int page
+        , int pageSize
+        , string sortBy
+        , string sortDirection
+        , CancellationToken cancellationToken = default)
+    {
+        Expression<Func<FiscalInvoice, bool>>? predicate = null;
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            var term = search.Trim();
+            if (long.TryParse(term, out var number))
+                predicate = x => x.Number == number;
+
+        }
+        Func<IQueryable<FiscalInvoice>, IOrderedQueryable<FiscalInvoice>> orderBy = (sortBy.ToLowerInvariant(), sortDirection.ToLowerInvariant()) switch
+        {
+            ("number", "asc") => query => query.OrderBy(x => x.Number),
+            ("number", "desc") => query => query.OrderByDescending(x => x.Number),
+            ("status", "asc") => query => query.OrderBy(x => x.Status),
+            ("status", "desc") => query => query.OrderByDescending(x => x.Status),
+            _ => query => query.OrderByDescending(x => x.Number)
+        };
+        return GetPagedAsync(page, pageSize, predicate, orderBy, cancellationToken);
+    }
 }
+
