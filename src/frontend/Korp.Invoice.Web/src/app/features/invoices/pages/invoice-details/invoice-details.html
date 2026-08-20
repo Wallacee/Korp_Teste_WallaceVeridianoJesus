@@ -1,196 +1,351 @@
 <div class="page-container">
 
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <a routerLink="/">
+      <mat-icon>home</mat-icon>
+      Início
+    </a>
+
+    <mat-icon class="breadcrumb-separator">
+      chevron_right
+    </mat-icon>
+
+    <a routerLink="/invoices">
+      Faturamento
+    </a>
+
+    <mat-icon class="breadcrumb-separator">
+      chevron_right
+    </mat-icon>
+
+    <a routerLink="/invoices">
+      Notas fiscais
+    </a>
+
+    <mat-icon class="breadcrumb-separator">
+      chevron_right
+    </mat-icon>
+
+    <strong>
+      Detalhes da nota
+    </strong>
+  </nav>
+
   @if (isLoading()) {
 
-  <div class="loading">
-    <mat-spinner diameter="42"></mat-spinner>
-  </div>
+  <section class="content-card details-loading-card">
+    <div class="details-loading">
+      <mat-spinner diameter="42"></mat-spinner>
+
+      <span>
+        Carregando nota fiscal...
+      </span>
+    </div>
+  </section>
 
   } @else if (invoice(); as invoice) {
 
   <header class="page-header">
 
-    <div>
+    <div class="page-heading">
 
-      <a routerLink="/invoices" class="back-link">
-
-        <mat-icon>arrow_back</mat-icon>
-        Notas fiscais
-
-      </a>
-
-      <div class="title-row">
-
-        <h1>
-          Nota fiscal #{{ invoice.number }}
-        </h1>
-
-        <span class="status-badge" [class.status-open]="invoice.status === 1"
-          [class.status-closed]="invoice.status === 2">
-
-          {{ getStatusLabel(invoice.status) }}
-
-        </span>
-
+      <div class="page-icon">
+        <mat-icon>receipt_long</mat-icon>
       </div>
 
-      <p>
-        Consulte os itens e o status da nota fiscal.
-      </p>
+      <div>
+        <div class="title-row">
+          <h1>
+            Nota fiscal #{{ invoice.number }}
+          </h1>
+
+          <span class="status-badge" [class.status-open]="invoice.status === 1"
+            [class.status-closed]="invoice.status === 2">
+
+            <span class="status-dot"></span>
+
+            {{ getStatusLabel(invoice.status) }}
+
+          </span>
+        </div>
+
+        <p>
+          Consulte os itens, o estoque relacionado e o status atual da nota.
+        </p>
+      </div>
 
     </div>
 
-    @if (invoice.status === 1) {
-    <button mat-flat-button type="button" [disabled]="isProcessing()" (click)="printInvoice()">
+    <div class="page-actions">
 
-      @if (isProcessing()) {
-      <mat-spinner diameter="18"></mat-spinner>
-      } @else {
-      <mat-icon>print</mat-icon>
+      <button mat-stroked-button type="button" routerLink="/invoices" class="back-action">
+
+        <mat-icon>arrow_back</mat-icon>
+        Voltar
+      </button>
+
+      @if (invoice.status === 1) {
+
+      <button mat-stroked-button type="button" class="secondary-action"
+        [routerLink]="['/invoices', invoice.id, 'edit']">
+
+        <mat-icon>edit</mat-icon>
+        Editar
+      </button>
+
+      <button mat-stroked-button type="button" class="danger-action" (click)="deleteInvoice()">
+
+        <mat-icon>delete_outline</mat-icon>
+        Excluir
+      </button>
+
+      <button mat-flat-button type="button" class="primary-action" [disabled]="isProcessing()" (click)="printInvoice()">
+
+        @if (isProcessing()) {
+        <mat-spinner diameter="18"></mat-spinner>
+        } @else {
+        <mat-icon>print</mat-icon>
+        }
+
+        Imprimir nota
+      </button>
+
       }
 
-      Imprimir nota
-    </button>
-    }
+    </div>
 
   </header>
 
+  <section class="summary-grid">
+
+    <article class="summary-card">
+      <div class="summary-icon">
+        <mat-icon>tag</mat-icon>
+      </div>
+
+      <div>
+        <span>Número da nota</span>
+
+        <strong>
+          #{{ invoice.number }}
+        </strong>
+      </div>
+    </article>
+
+    <article class="summary-card">
+      <div class="summary-icon">
+        <mat-icon>inventory_2</mat-icon>
+      </div>
+
+      <div>
+        <span>Quantidade de itens</span>
+
+        <strong>
+          {{ invoice.items.length }}
+        </strong>
+      </div>
+    </article>
+
+    <article class="summary-card">
+      <div class="summary-icon">
+        <mat-icon>
+          {{ invoice.status === 1 ? 'schedule' : 'check_circle' }}
+        </mat-icon>
+      </div>
+
+      <div>
+        <span>Status atual</span>
+
+        <strong>
+          {{ getStatusLabel(invoice.status) }}
+        </strong>
+      </div>
+    </article>
+
+  </section>
+
   <section class="content-card">
 
-    <div class="card-header">
-      <h2>Itens da nota</h2>
+    <header class="card-header">
 
-      <span>
-        {{ invoice.items.length }}
-        item(ns)
-      </span>
+      <div>
+        <h2>Itens da nota</h2>
+
+        <p>
+          Produtos e quantidades vinculados à nota fiscal.
+        </p>
+      </div>
+
+      <div class="record-count">
+        <mat-icon>format_list_numbered</mat-icon>
+
+        <span>
+          <strong>{{ invoice.items.length }}</strong>
+          item(ns)
+        </span>
+      </div>
+
+    </header>
+
+    <div class="table-wrapper">
+
+      <table mat-table [dataSource]="invoice.items" class="data-table">
+
+        <ng-container matColumnDef="code">
+
+          <th mat-header-cell *matHeaderCellDef>
+            Código
+          </th>
+
+          <td mat-cell *matCellDef="let item">
+
+            <span class="product-code">
+              {{ getProduct(item.productId)?.code ?? '-' }}
+            </span>
+
+          </td>
+
+        </ng-container>
+
+        <ng-container matColumnDef="description">
+
+          <th mat-header-cell *matHeaderCellDef>
+            Produto
+          </th>
+
+          <td mat-cell *matCellDef="let item">
+
+            <span class="product-description">
+              {{
+              getProduct(item.productId)?.description
+              ?? 'Produto não encontrado'
+              }}
+            </span>
+
+          </td>
+
+        </ng-container>
+
+        <ng-container matColumnDef="quantity">
+
+          <th mat-header-cell *matHeaderCellDef>
+            Quantidade
+          </th>
+
+          <td mat-cell *matCellDef="let item">
+
+            <span class="quantity-badge">
+              {{ item.quantity }}
+            </span>
+
+          </td>
+
+        </ng-container>
+
+        <ng-container matColumnDef="stock">
+
+          <th mat-header-cell *matHeaderCellDef>
+            Estoque atual
+          </th>
+
+          <td mat-cell *matCellDef="let item">
+
+            <span class="stock-value">
+              {{ getProduct(item.productId)?.stock ?? '-' }}
+            </span>
+
+          </td>
+
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns">
+        </tr>
+
+        <tr mat-row *matRowDef="let row; columns: displayedColumns">
+        </tr>
+
+      </table>
+
     </div>
-
-    <table mat-table [dataSource]="invoice.items">
-
-      <ng-container matColumnDef="code">
-
-        <th mat-header-cell *matHeaderCellDef>
-          Código
-        </th>
-
-        <td mat-cell *matCellDef="let item">
-
-          {{ getProduct(item.productId)?.code ?? '-' }}
-
-        </td>
-
-      </ng-container>
-
-      <ng-container matColumnDef="description">
-
-        <th mat-header-cell *matHeaderCellDef>
-          Produto
-        </th>
-
-        <td mat-cell *matCellDef="let item">
-
-          {{ getProduct(item.productId)?.description ?? 'Produto não encontrado' }}
-
-        </td>
-
-      </ng-container>
-
-      <ng-container matColumnDef="quantity">
-
-        <th mat-header-cell *matHeaderCellDef>
-          Quantidade
-        </th>
-
-        <td mat-cell *matCellDef="let item">
-
-          {{ item.quantity }}
-
-        </td>
-
-      </ng-container>
-
-      <ng-container matColumnDef="stock">
-
-        <th mat-header-cell *matHeaderCellDef>
-          Estoque atual
-        </th>
-
-        <td mat-cell *matCellDef="let item">
-
-          {{ getProduct(item.productId)?.stock ?? '-' }}
-
-        </td>
-
-      </ng-container>
-
-      <tr mat-header-row *matHeaderRowDef="displayedColumns">
-      </tr>
-
-      <tr mat-row *matRowDef="let row; columns: displayedColumns">
-      </tr>
-
-    </table>
 
   </section>
 
   }
 
 </div>
+
 @if (invoice(); as invoice) {
-  <section class="invoice-print">
 
-    <div class="print-header">
-      <h1>Korp Invoice</h1>
-      <h2>Nota Fiscal #{{ invoice.number }}</h2>
-    </div>
+<section class="invoice-print">
 
-    <div class="print-info">
-      <span>
-        <strong>Status:</strong>
-        {{ getStatusLabel(invoice.status) }}
-      </span>
+  <div class="print-header">
+    <h1>Korp Invoice</h1>
 
-      <span>
-        <strong>Quantidade de itens:</strong>
-        {{ invoice.items.length }}
-      </span>
-    </div>
+    <h2>
+      Nota Fiscal #{{ invoice.number }}
+    </h2>
+  </div>
 
-    <table class="print-table">
-      <thead>
-        <tr>
-          <th>Código</th>
-          <th>Produto</th>
-          <th>Quantidade</th>
-        </tr>
-      </thead>
+  <div class="print-info">
 
-      <tbody>
-        @for (item of invoice.items; track item.productId) {
-          <tr>
-            <td>
-              {{ getProduct(item.productId)?.code ?? '-' }}
-            </td>
+    <span>
+      <strong>Status:</strong>
+      {{ getStatusLabel(invoice.status) }}
+    </span>
 
-            <td>
-              {{
-                getProduct(item.productId)?.description
-                  ?? 'Produto não encontrado'
-              }}
-            </td>
+    <span>
+      <strong>Quantidade de itens:</strong>
+      {{ invoice.items.length }}
+    </span>
 
-            <td>
-              {{ item.quantity }}
-            </td>
-          </tr>
-        }
-      </tbody>
-    </table>
+  </div>
 
-    <div class="print-footer">
-      Documento emitido pelo Korp Invoice
-    </div>
+  <table class="print-table">
 
-  </section>
+    <thead>
+      <tr>
+        <th>Código</th>
+        <th>Produto</th>
+        <th>Quantidade</th>
+      </tr>
+    </thead>
+
+    <tbody>
+
+      @for (
+      item of invoice.items;
+      track item.productId
+      ) {
+
+      <tr>
+
+        <td>
+          {{ getProduct(item.productId)?.code ?? '-' }}
+        </td>
+
+        <td>
+          {{
+          getProduct(item.productId)?.description
+          ?? 'Produto não encontrado'
+          }}
+        </td>
+
+        <td>
+          {{ item.quantity }}
+        </td>
+
+      </tr>
+
+      }
+
+    </tbody>
+
+  </table>
+
+  <div class="print-footer">
+    Documento emitido pelo Korp Invoice
+  </div>
+
+</section>
+
 }

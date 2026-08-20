@@ -125,10 +125,49 @@ export class InvoiceDetails implements OnInit {
       }
     );
 
+
+
     dialogRef.afterClosed().subscribe(confirmed => {
       if (!confirmed)
         return;
       this.executePrinting(invoice.id);
+    });
+  }
+
+  deleteInvoice(): void {
+    const invoice = this.invoice();
+
+    if (!invoice || invoice.status !== 1) {
+      return;
+    }
+
+    const dialogRef = this.dialog.open(
+      ConfirmDialog,
+      {
+        data: {
+          title: 'Excluir nota fiscal',
+          message:
+            `Deseja realmente excluir a nota #${invoice.number}?`,
+          confirmText: 'Excluir',
+          cancelText: 'Voltar'
+        }
+      }
+    );
+
+    dialogRef.afterClosed().subscribe(confirmed => {
+      if (!confirmed) {
+        return;
+      }
+
+      this.invoiceApiService.delete(invoice.id).subscribe({
+        next: () => {
+          this.notification.success('Nota fiscal excluída com sucesso.');
+          this.router.navigate(['/invoices']);
+        },
+        error: error => {
+          this.notification.error(error.error?.detail ?? 'Não foi possível excluir a nota fiscal.');
+        }
+      });
     });
   }
   private executePrinting(id: string): void {

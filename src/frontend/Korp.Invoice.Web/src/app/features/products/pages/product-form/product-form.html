@@ -1,152 +1,235 @@
 <div class="page-container">
 
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <a routerLink="/">
+      <mat-icon>home</mat-icon>
+      Início
+    </a>
+
+    <mat-icon class="breadcrumb-separator">
+      chevron_right
+    </mat-icon>
+
+    <a routerLink="/products">
+      Estoque
+    </a>
+
+    <mat-icon class="breadcrumb-separator">
+      chevron_right
+    </mat-icon>
+
+    <a routerLink="/products">
+      Produtos
+    </a>
+
+    <mat-icon class="breadcrumb-separator">
+      chevron_right
+    </mat-icon>
+
+    <strong>
+      {{ isEditMode() ? 'Editar produto' : 'Novo produto' }}
+    </strong>
+  </nav>
+
   <header class="page-header">
-    <div>
 
-      <a routerLink="/products" class="back-link">
+    <div class="page-heading">
 
-        <mat-icon>arrow_back</mat-icon>
-
-        Produtos
-      </a>
-
-      <h1>
-        {{ isEditMode() ? 'Editar produto' : 'Novo produto' }}
-      </h1>
-
-      <p>
-        {{isEditMode()? 'Atualize as informações do produto.': 'Cadastre um novo produto no estoque.'}}
-      </p>
-
-    </div>
-  </header>
-  @if (isLoading()) {
-  <div class="form-loading">
-    <mat-spinner diameter="40"></mat-spinner>
-  </div>
-  } @else {
-  <form class="form-card" [formGroup]="form" (ngSubmit)="save()">
-
-    <div class="form-header">
+      <div class="page-icon">
+        <mat-icon>
+          {{ isEditMode() ? 'edit' : 'add_box' }}
+        </mat-icon>
+      </div>
 
       <div>
-        <h2>{{isEditMode()? 'Dados do produto': 'Informações do produto'}}</h2>
+        <h1>
+          {{ isEditMode() ? 'Editar produto' : 'Novo produto' }}
+        </h1>
 
         <p>
-          Preencha os dados necessários para o cadastro.
+          {{
+          isEditMode()
+          ? 'Atualize as informações do produto selecionado.'
+          : 'Cadastre um novo produto para utilização no estoque.'
+          }}
         </p>
       </div>
 
     </div>
 
+  </header>
+
+  @if (isLoading()) {
+
+  <section class="form-card form-loading-state">
+
+    <div class="form-loading">
+      <mat-spinner diameter="40"></mat-spinner>
+
+      <span>
+        Carregando informações do produto...
+      </span>
+    </div>
+
+  </section>
+
+  } @else {
+
+  <form class="form-card" [formGroup]="form" (ngSubmit)="save()">
+
+    <header class="form-header">
+
+      <div class="form-header-content">
+
+        <div class="form-section-icon">
+          <mat-icon>inventory_2</mat-icon>
+        </div>
+
+        <div>
+          <h2>Informações do produto</h2>
+
+          <p>
+            Informe os dados de identificação e disponibilidade em estoque.
+          </p>
+        </div>
+
+      </div>
+
+      <span class="required-hint">
+        <span>*</span>
+        Campos obrigatórios
+      </span>
+
+    </header>
+
     <div class="form-content">
 
-      <mat-form-field appearance="outline">
+      <div class="form-grid product-form-grid">
 
-        <mat-label>Código</mat-label>
+        <mat-form-field appearance="outline" class="code-field">
 
-        <input matInput formControlName="code" maxlength="50" autocomplete="off">
+          <mat-label>Código</mat-label>
 
-        @if (form.controls.code.touched &&
-        form.controls.code.hasError('required')
-        ) {
-        <mat-error>
-          O código é obrigatório.
-        </mat-error>
-        }
+          <input matInput formControlName="code" maxlength="50" autocomplete="off">
 
-        @if (
-        form.controls.code.touched &&
-        form.controls.code.hasError('maxlength')
-        ) {
-        <mat-error>
-          O código deve possuir no máximo 50 caracteres.
-        </mat-error>
-        }
+          <mat-hint align="end">
+            {{ form.controls.code.value?.length || 0 }}/50
+          </mat-hint>
 
-        @if (form.controls.code.hasError('server')) {
-        <mat-error>
-          {{ form.controls.code.getError('server') }}
-        </mat-error>
-        }
+          @if (
+          form.controls.code.touched &&
+          form.controls.code.hasError('required')
+          ) {
+          <mat-error>
+            O código é obrigatório.
+          </mat-error>
+          }
 
-      </mat-form-field>
+          @if (
+          form.controls.code.touched &&
+          form.controls.code.hasError('maxlength')
+          ) {
+          <mat-error>
+            O código deve possuir no máximo 50 caracteres.
+          </mat-error>
+          }
 
-      <mat-form-field appearance="outline" class="description-field">
+          @if (form.controls.code.hasError('server')) {
+          <mat-error>
+            {{ form.controls.code.getError('server') }}
+          </mat-error>
+          }
 
-        <mat-label>Descrição</mat-label>
+        </mat-form-field>
 
-        <input matInput formControlName="description" maxlength="200" autocomplete="off">
+        <mat-form-field appearance="outline" class="description-field">
 
-        @if (
-        form.controls.description.touched &&
-        form.controls.description.hasError('required')
-        ) {
-        <mat-error>
-          A descrição é obrigatória.
-        </mat-error>
-        }
+          <mat-label>Descrição</mat-label>
 
-        @if (
-        form.controls.description.touched &&
-        form.controls.description.hasError('maxlength')
-        ) {
-        <mat-error>
-          A descrição deve possuir no máximo 200 caracteres.
-        </mat-error>
-        }
+          <input matInput formControlName="description" maxlength="200" autocomplete="off">
 
-        @if (form.controls.description.hasError('server')) {
-        <mat-error>
-          {{ form.controls.description.getError('server') }}
-        </mat-error>
-        }
+          <mat-hint align="end">
+            {{ form.controls.description.value?.length || 0 }}/200
+          </mat-hint>
 
-      </mat-form-field>
+          @if (
+          form.controls.description.touched &&
+          form.controls.description.hasError('required')
+          ) {
+          <mat-error>
+            A descrição é obrigatória.
+          </mat-error>
+          }
 
-      <mat-form-field appearance="outline">
+          @if (
+          form.controls.description.touched &&
+          form.controls.description.hasError('maxlength')
+          ) {
+          <mat-error>
+            A descrição deve possuir no máximo 200 caracteres.
+          </mat-error>
+          }
 
-        <mat-label>Estoque inicial</mat-label>
+          @if (form.controls.description.hasError('server')) {
+          <mat-error>
+            {{ form.controls.description.getError('server') }}
+          </mat-error>
+          }
 
-        <input matInput type="number" min="0" formControlName="stock">
+        </mat-form-field>
 
-        @if (
-        form.controls.stock.touched &&
-        form.controls.stock.hasError('required')
-        ) {
-        <mat-error>
-          O estoque inicial é obrigatório.
-        </mat-error>
-        }
+        <mat-form-field appearance="outline" class="stock-field">
 
-        @if (
-        form.controls.stock.touched &&
-        form.controls.stock.hasError('min')
-        ) {
-        <mat-error>
-          O estoque não pode ser negativo.
-        </mat-error>
-        }
+          <mat-label>
+            {{ isEditMode() ? 'Saldo em estoque' : 'Estoque inicial' }}
+          </mat-label>
 
-        @if (form.controls.stock.hasError('server')) {
-        <mat-error>
-          {{ form.controls.stock.getError('server') }}
-        </mat-error>
-        }
+          <input matInput type="number" min="0" formControlName="stock">
 
-      </mat-form-field>
+          <mat-icon matSuffix>
+            inventory
+          </mat-icon>
 
+          @if (
+          form.controls.stock.touched &&
+          form.controls.stock.hasError('required')
+          ) {
+          <mat-error>
+            O estoque é obrigatório.
+          </mat-error>
+          }
+
+          @if (
+          form.controls.stock.touched &&
+          form.controls.stock.hasError('min')
+          ) {
+          <mat-error>
+            O estoque não pode ser negativo.
+          </mat-error>
+          }
+
+          @if (form.controls.stock.hasError('server')) {
+          <mat-error>
+            {{ form.controls.stock.getError('server') }}
+          </mat-error>
+          }
+
+        </mat-form-field>
+
+      </div>
 
     </div>
 
     <footer class="form-actions">
 
-      <button mat-stroked-button type="button" routerLink="/products" [disabled]="isSaving()">
+      <button mat-stroked-button type="button" routerLink="/products" class="back-action" [disabled]="isSaving()">
 
-        Cancelar
+        <mat-icon>arrow_back</mat-icon>
+
+        Voltar
       </button>
 
-      <button mat-flat-button type="submit" [disabled]="isSaving()">
+      <button mat-flat-button type="submit" class="primary-action" [disabled]="isSaving()">
 
         @if (isSaving()) {
         <mat-spinner diameter="18"></mat-spinner>
@@ -155,10 +238,13 @@
         }
 
         {{ isEditMode() ? 'Salvar alterações' : 'Salvar produto' }}
+
       </button>
 
     </footer>
 
   </form>
+
   }
+
 </div>
