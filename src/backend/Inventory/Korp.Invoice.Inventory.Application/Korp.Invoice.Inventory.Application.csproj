@@ -2,7 +2,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Korp.Invoice.Inventory.Domain\Korp.Invoice.Inventory.Domain.csproj" />
-    <ProjectReference Include="..\..\Shared\Korp.Invoice.Shared\Korp.Invoice.Shared.csproj" />
   </ItemGroup>
 
   <ItemGroup>
