@@ -73,12 +73,7 @@ public sealed class InvoiceAppService : IInvoiceAppService
         return invoice is null ? throw new NotFoundException("Nota fiscal", id) : Map(invoice);
     }
 
-    public async Task<IReadOnlyCollection<FiscalInvoiceDto>> GetAllAsync(CancellationToken cancellationToken = default)
-    {
-        var invoices = await _invoiceRepository.GetAllAsync(cancellationToken);
-
-        return [.. invoices.Select(Map)];
-    }
+    
 
     public async Task<FiscalInvoiceDto> ProcessAsync(Guid id, CancellationToken cancellationToken =
     default)

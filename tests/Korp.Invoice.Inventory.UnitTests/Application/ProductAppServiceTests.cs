@@ -16,6 +16,8 @@ public sealed class ProductAppServiceTests
     private readonly Mock<IStockOperationRepository> _stockOperationRepositoryMock = new();
     private readonly Mock<IInventoryUnitOfWork> _unitOfWorkMock = new();
     private readonly Mock<IValidator<ProcessStockRequest>> _processStockValidatorMock = new();
+    private readonly Mock<IValidator<UpdateProductRequest>> _updateValidatorMock = new();
+
 
     private ProductAppService CreateService()
     {
@@ -24,7 +26,8 @@ public sealed class ProductAppServiceTests
             , _debitStockValidatorMock.Object
             , _stockOperationRepositoryMock.Object
             , _unitOfWorkMock.Object
-            , _processStockValidatorMock.Object);
+            , _processStockValidatorMock.Object
+            , _updateValidatorMock.Object);
     }
     [Fact]
     public async Task CreateAsync_ShouldCreateProduct_WhenRequestIsValid()
