@@ -25,14 +25,18 @@ export class InvoiceApiService {
     if (request.search?.trim())
       params = params.set('search', request.search.trim());
 
-    return this.http.get<PagedResult<Invoice>>(this.apiUrl,{ params });
+    return this.http.get<PagedResult<Invoice>>(this.apiUrl, { params });
   }
 
   create(request: CreateInvoiceRequest): Observable<Invoice> {
     return this.http.post<Invoice>(this.apiUrl, request);
-}
+  }
 
   getById(id: string): Observable<Invoice> {
     return this.http.get<Invoice>(`${this.apiUrl}/${id}`);
+  }
+
+  process(id: string): Observable<Invoice> {
+    return this.http.post<Invoice>(`${this.apiUrl}/${id}/process`, null);
   }
 }

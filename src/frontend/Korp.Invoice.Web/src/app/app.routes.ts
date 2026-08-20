@@ -36,6 +36,11 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/invoices/pages/invoice-list/invoice-list')
             .then(m => m.InvoiceList)
+      }, {
+        path: 'invoices/:id',
+        loadComponent: () =>
+          import('./features/invoices/pages/invoice-details/invoice-details')
+            .then(m => m.InvoiceDetails)
       },
       {
         path: 'products',

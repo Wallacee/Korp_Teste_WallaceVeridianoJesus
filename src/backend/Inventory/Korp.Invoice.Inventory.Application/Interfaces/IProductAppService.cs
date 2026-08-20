@@ -8,6 +8,7 @@ public interface IProductAppService
 {
     Task<ProductDto> CreateAsync(CreateProductRequest request, CancellationToken cancellationToken = default);
     Task<ProductDto> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
+    Task<IReadOnlyCollection<ProductDto>> GetByIdsAsync(IEnumerable<Guid> ids, CancellationToken cancellationToken = default);
     Task DebitStockAsync(Guid productId, DebitStockRequest request, CancellationToken cancellationToken = default);
     Task ProcessStockAsync(ProcessStockRequest request, CancellationToken cancellationToken = default);
     Task<PagedResult<ProductDto>> SearchAsync(ProductSearchRequest request, CancellationToken cancellationToken = default);
