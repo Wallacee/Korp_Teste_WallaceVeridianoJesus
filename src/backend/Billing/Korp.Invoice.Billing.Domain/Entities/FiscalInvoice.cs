@@ -32,10 +32,19 @@ public sealed class FiscalInvoice
 
         Status = InvoiceStatus.Closed;
     }
-    private void EnsureOpen()
+    public void EnsureOpen()
     {
         if (Status == InvoiceStatus.Closed)
             throw new InvoiceAlreadyClosedException();
+    }
+    public void ReplaceItems(IEnumerable<(Guid ProductId, int Quantity)> items)
+    {
+        EnsureOpen();
+
+        _items.Clear();
+
+        foreach (var (ProductId, Quantity) in items)
+            AddItem(ProductId, Quantity);
     }
 
     public void EnsureCanBeProcessed()
@@ -45,4 +54,6 @@ public sealed class FiscalInvoice
         if (_items.Count == 0)
             throw new InvoiceWithoutItemsException();
     }
+
+
 }

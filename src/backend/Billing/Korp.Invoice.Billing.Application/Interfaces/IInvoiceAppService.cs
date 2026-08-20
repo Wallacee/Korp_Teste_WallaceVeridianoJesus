@@ -11,4 +11,6 @@ public interface IInvoiceAppService
     Task<FiscalInvoiceDto> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
     Task<FiscalInvoiceDto> ProcessAsync(Guid id, CancellationToken cancellationToken = default);
     Task<PagedResult<FiscalInvoiceDto>> SearchAsync(InvoiceSearchRequest request, CancellationToken cancellationToken = default);
+    Task<FiscalInvoiceDto> UpdateAsync(Guid id, UpdateInvoiceRequest request, CancellationToken cancellationToken = default);
+    Task DeleteAsync(Guid id, CancellationToken cancellationToken = default);
 }

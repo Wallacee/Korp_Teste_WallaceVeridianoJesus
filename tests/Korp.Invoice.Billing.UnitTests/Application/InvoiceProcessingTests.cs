@@ -4,7 +4,7 @@ using Korp.Invoice.Billing.Application.Services;
 using Korp.Invoice.Billing.Domain.Entities;
 using Korp.Invoice.Billing.Domain.Enums;
 using Korp.Invoice.Billing.Domain.Exceptions;
-using Korp.Invoice.Billing.Domain.Repositories;
+using Korp.Invoice.Billing.Domain.Interfaces;
 using Korp.Invoice.Billing.Domain.Services;
 using Korp.Invoice.Inventory.Domain.Exceptions;
 using Moq;

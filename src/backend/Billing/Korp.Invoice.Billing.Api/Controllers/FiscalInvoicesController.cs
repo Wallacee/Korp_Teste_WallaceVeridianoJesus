@@ -37,4 +37,17 @@ public sealed class FiscalInvoicesController : ControllerBase
     {
         return Ok(await _invoiceAppService.ProcessAsync(id, cancellationToken));
     }
+
+    [HttpPut("{id:guid}")]
+    public async Task<IActionResult> UpdateAsync(Guid id, [FromBody] UpdateInvoiceRequest request, CancellationToken cancellationToken)
+    {
+        var invoice = await _invoiceAppService.UpdateAsync(id, request, cancellationToken);
+        return Ok(invoice);
+    }
+    [HttpDelete("{id:guid}")]
+    public async Task<IActionResult> DeleteAsync(Guid id, CancellationToken cancellationToken)
+    {
+        await _invoiceAppService.DeleteAsync(id, cancellationToken);
+        return NoContent();
+    }
 }

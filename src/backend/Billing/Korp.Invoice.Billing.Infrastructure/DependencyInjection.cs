@@ -1,5 +1,5 @@
 using Korp.Invoice.Billing.Application.ExternalServices.Inventory;
-using Korp.Invoice.Billing.Domain.Repositories;
+using Korp.Invoice.Billing.Domain.Interfaces;
 using Korp.Invoice.Billing.Domain.Services;
 using Korp.Invoice.Billing.Infrastructure.ExternalServices.Inventory;
 using Korp.Invoice.Billing.Infrastructure.Persistence;
@@ -31,6 +31,7 @@ public static class DependencyInjection
         services.AddDbContext<BillingDbContext>(options => options.UseNpgsql(connectionString));
         services.AddScoped<IInvoiceRepository, InvoiceRepository>();
         services.AddScoped<IInvoiceNumberGenerator, PostgresInvoiceNumberGenerator>();
+        services.AddScoped<IBillingUnitOfWork, BillingUnitOfWork>();
 
         return services;
     }
