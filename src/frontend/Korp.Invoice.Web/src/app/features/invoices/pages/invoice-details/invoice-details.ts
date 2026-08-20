@@ -1,0 +1,188 @@
+import {
+  Component,
+  OnInit,
+  inject,
+  signal
+} from '@angular/core';
+
+import { Router, RouterLink, ActivatedRoute } from '@angular/router';
+import { forkJoin, finalize, switchMap } from 'rxjs';
+
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatTableModule } from '@angular/material/table';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+
+import { InvoiceApiService } from '../../services/invoice-api.service';
+import { ProductApiService } from '../../../products/services/product-api.service';
+
+import { Invoice } from '../../models/invoice.model';
+import { Product } from '../../../products/models/product.model';
+
+import { NotificationService } from '../../../../shared/services/notification.service';
+import { ConfirmDialog } from '../../../../shared/components/confirm-dialog';
+
+@Component({
+  selector: 'app-invoice-details',
+  standalone: true,
+  imports: [
+    RouterLink,
+    MatButtonModule,
+    MatIconModule,
+    MatProgressSpinnerModule,
+    MatTableModule,
+    MatDialogModule
+  ],
+  templateUrl: './invoice-details.html',
+  styleUrl: './invoice-details.scss'
+})
+export class InvoiceDetails implements OnInit {
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+
+  private readonly invoiceApiService = inject(InvoiceApiService);
+  private readonly productApiService = inject(ProductApiService);
+
+  private readonly notification = inject(NotificationService);
+  private readonly dialog = inject(MatDialog);
+
+  readonly invoice = signal<Invoice | null>(null);
+  readonly products = signal<Map<string, Product>>(new Map());
+
+  readonly isLoading = signal(false);
+  readonly isProcessing = signal(false);
+
+  readonly displayedColumns = [
+    'code',
+    'description',
+    'quantity',
+    'stock'
+  ];
+
+  ngOnInit(): void {
+    this.loadInvoice();
+  }
+
+  loadInvoice(): void {
+    const id = this.route.snapshot.paramMap.get('id');
+
+    if (!id) {
+      this.router.navigate(['/invoices']);
+      return;
+    }
+
+    this.isLoading.set(true);
+
+    this.invoiceApiService
+      .getById(id)
+      .pipe(
+        switchMap(invoice => {
+          this.invoice.set(invoice);
+
+          const productIds = [
+            ...new Set(
+              invoice.items.map(item => item.productId)
+            )
+          ];
+
+          return this.productApiService
+            .getByIds(productIds);
+        }),
+
+        finalize(() => this.isLoading.set(false))
+      )
+      .subscribe({
+        next: products => {
+          const productMap = new Map<string, Product>();
+
+          products.forEach(product => {
+            productMap.set(product.id, product);
+          });
+
+          this.products.set(productMap);
+        },
+
+        error: error => {
+          console.error(error);
+
+          this.notification.error(
+            'Não foi possível carregar a nota fiscal.'
+          );
+
+          this.router.navigate(['/invoices']);
+        }
+      });
+  }
+
+  getProduct(productId: string): Product | undefined {
+    return this.products().get(productId);
+  }
+
+  getStatusLabel(status: number): string {
+    return status === 1
+      ? 'Aberta'
+      : status === 2
+        ? 'Fechada'
+        : 'Desconhecido';
+  }
+
+  processInvoice(): void {
+    const invoice = this.invoice();
+
+    if (!invoice || invoice.status !== 1) {
+      return;
+    }
+
+    const dialogRef = this.dialog.open(
+      ConfirmDialog,
+      {
+        data: {
+          title: 'Processar nota fiscal',
+          message:
+            `Deseja processar a nota #${invoice.number}? ` +
+            'Esta operação realizará o débito dos produtos no estoque.',
+          confirmText: 'Processar',
+          cancelText: 'Cancelar'
+        }
+      }
+    );
+
+    dialogRef.afterClosed().subscribe(confirmed => {
+      if (!confirmed) {
+        return;
+      }
+
+      this.executeProcessing(invoice.id);
+    });
+  }
+
+  private executeProcessing(id: string): void {
+    this.isProcessing.set(true);
+
+    this.invoiceApiService
+      .process(id)
+      .pipe(
+        finalize(() => this.isProcessing.set(false))
+      )
+      .subscribe({
+        next: invoice => {
+          this.invoice.set(invoice);
+
+          this.notification.success(
+            'Nota fiscal processada com sucesso.'
+          );
+
+          this.loadInvoice();
+        },
+
+        error: error => {
+          const message =
+            error.error?.detail ??
+            'Não foi possível processar a nota fiscal.';
+
+          this.notification.error(message);
+        }
+      });
+  }
+}

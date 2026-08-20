@@ -136,6 +136,18 @@ public sealed class ProductAppService : IProductAppService
         await _productRepository.DeleteAsync(product, cancellationToken);
     }
 
+    public async Task<IReadOnlyCollection<ProductDto>> GetByIdsAsync(IEnumerable<Guid> ids,CancellationToken cancellationToken = default)
+    {
+        var productIds = ids.Where(id => id != Guid.Empty).Distinct().ToList();
+
+        if (productIds.Count == 0)
+            return [];
+
+        var products = await _productRepository.GetByIdsAsync(productIds,cancellationToken);
+
+        return [.. products.Select(Map)];
+    }
+
     private static ProductDto Map(Product product)
     {
         return new ProductDto
