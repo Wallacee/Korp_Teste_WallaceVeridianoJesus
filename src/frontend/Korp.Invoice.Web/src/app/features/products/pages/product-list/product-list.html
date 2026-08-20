@@ -1,38 +1,95 @@
 <div class="page-container">
 
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <a routerLink="/">
+      <mat-icon>home</mat-icon>
+      Início
+    </a>
+
+    <mat-icon class="breadcrumb-separator">
+      chevron_right
+    </mat-icon>
+
+    <span>Estoque</span>
+
+    <mat-icon class="breadcrumb-separator">
+      chevron_right
+    </mat-icon>
+
+    <strong>Produtos</strong>
+  </nav>
+
   <header class="page-header">
-    <div>
-      <h1>Produtos</h1>
-      <p>Gerencie os produtos disponíveis no estoque.</p>
+    <div class="page-heading">
+      <div class="page-icon">
+        <mat-icon>inventory_2</mat-icon>
+      </div>
+
+      <div>
+        <h1>Produtos</h1>
+
+        <p>
+          Gerencie os produtos disponíveis no estoque.
+        </p>
+      </div>
     </div>
 
-    <button mat-flat-button type="button" routerLink="/products/new" class="new-product-button">
-      <mat-icon>add</mat-icon>
-      Novo produto
-    </button>
+    <div class="page-actions">
+      <button mat-flat-button type="button" routerLink="/products/new" class="primary-action">
+
+        <mat-icon>add</mat-icon>
+
+        Novo produto
+      </button>
+    </div>
   </header>
 
   <section class="content-card">
+
+    <header class="card-header">
+      <div>
+        <h2>Produtos cadastrados</h2>
+
+        <p>
+          Consulte, edite e gerencie os produtos do estoque.
+        </p>
+      </div>
+
+      <div class="record-count">
+        <mat-icon>inventory</mat-icon>
+
+        <span>
+          <strong>{{ totalCount() }}</strong>
+          produto(s)
+        </span>
+      </div>
+    </header>
 
     <div class="table-toolbar">
 
       <mat-form-field appearance="outline" class="search-field" subscriptSizing="dynamic">
 
-        <mat-icon matPrefix>search</mat-icon>
+        <mat-icon matPrefix>
+          search
+        </mat-icon>
 
-        <input matInput [formControl]="searchControl" placeholder="Pesquisar por código ou descrição">
+        <input matInput [formControl]="searchControl" placeholder="Pesquisar por código ou descrição"
+          autocomplete="off">
 
         @if (searchControl.value) {
         <button mat-icon-button matSuffix type="button" aria-label="Limpar pesquisa"
           (click)="searchControl.setValue('')">
+
           <mat-icon>close</mat-icon>
         </button>
         }
 
       </mat-form-field>
 
-      <button mat-stroked-button type="button" (click)="loadProducts()">
+      <button mat-stroked-button type="button" class="secondary-action" (click)="loadProducts()">
+
         <mat-icon>refresh</mat-icon>
+
         Atualizar
       </button>
 
@@ -42,74 +99,121 @@
 
       @if (isLoading()) {
       <div class="loading-overlay">
-        <mat-spinner diameter="36"></mat-spinner>
+        <div class="loading-content">
+          <mat-spinner diameter="36"></mat-spinner>
+
+          <span>
+            Carregando produtos...
+          </span>
+        </div>
       </div>
       }
 
       <table mat-table matSort [dataSource]="products()" [matSortActive]="sortBy" [matSortDirection]="sortDirection"
-        (matSortChange)="onSortChange($event)">
+        (matSortChange)="onSortChange($event)" class="data-table">
 
         <ng-container matColumnDef="code">
-          <th *matHeaderCellDef mat-sort-header="code">
+
+          <th mat-header-cell *matHeaderCellDef mat-sort-header="code">
+
             Código
           </th>
 
           <td mat-cell *matCellDef="let product">
+
             <span class="product-code">
               {{ product.code }}
             </span>
+
           </td>
+
         </ng-container>
 
         <ng-container matColumnDef="description">
+
           <th mat-header-cell *matHeaderCellDef mat-sort-header="description">
+
             Descrição
           </th>
 
           <td mat-cell *matCellDef="let product">
-            {{ product.description }}
+
+            <span class="product-description">
+              {{ product.description }}
+            </span>
+
           </td>
+
         </ng-container>
 
         <ng-container matColumnDef="stock">
+
           <th mat-header-cell *matHeaderCellDef mat-sort-header="stock">
+
             Saldo
           </th>
 
           <td mat-cell *matCellDef="let product">
-            {{ product.stock }}
+
+            <span class="stock-badge" [class.stock-empty]="product.stock === 0"
+              [class.stock-low]="product.stock > 0 && product.stock <= 5">
+
+              {{ product.stock }}
+
+            </span>
+
           </td>
+
         </ng-container>
 
         <ng-container matColumnDef="createdAtUtc">
+
           <th mat-header-cell *matHeaderCellDef mat-sort-header="createdAtUtc">
+
             Cadastrado em
           </th>
 
           <td mat-cell *matCellDef="let product">
-            {{ product.createdAtUtc | date:'dd/MM/yyyy HH:mm' }}
+
+            <span class="date-value">
+              {{ product.createdAtUtc | date:'dd/MM/yyyy' }}
+            </span>
+
+            <small>
+              {{ product.createdAtUtc | date:'HH:mm' }}
+            </small>
+
           </td>
+
         </ng-container>
 
         <ng-container matColumnDef="actions">
+
           <th mat-header-cell *matHeaderCellDef class="actions-column">
+
             Ações
           </th>
 
           <td mat-cell *matCellDef="let product" class="actions-column">
 
             <div class="action-buttons">
-              <button mat-icon-button type="button" [routerLink]="['/products', product.id, 'edit']"
-                aria-label="Editar produto">
+
+              <button mat-icon-button type="button" class="table-action"
+                [routerLink]="['/products', product.id, 'edit']" aria-label="Editar produto" title="Editar produto">
+
                 <mat-icon>edit</mat-icon>
               </button>
 
-              <button mat-icon-button type="button" aria-label="Excluir produto" (click)="deleteProduct(product)">
-                <mat-icon>delete</mat-icon>
+              <button mat-icon-button type="button" class="table-action danger" aria-label="Excluir produto"
+                title="Excluir produto" (click)="deleteProduct(product)">
+
+                <mat-icon>delete_outline</mat-icon>
               </button>
+
             </div>
 
           </td>
+
         </ng-container>
 
         <tr mat-header-row *matHeaderRowDef="displayedColumns">
@@ -121,25 +225,44 @@
       </table>
 
       @if (!isLoading() && products().length === 0) {
+
       <div class="empty-state">
+
         <div class="empty-icon">
           <mat-icon>inventory_2</mat-icon>
         </div>
 
-        <strong>Nenhum produto encontrado</strong>
+        <h3>Nenhum produto encontrado</h3>
 
-        <span>
-          Altere os filtros ou cadastre um novo produto.
-        </span>
+        <p>
+          Nenhum registro corresponde aos critérios informados.
+        </p>
+
+        @if (searchControl.value) {
+        <button mat-stroked-button type="button" (click)="searchControl.setValue('')">
+
+          Limpar pesquisa
+        </button>
+        }
+
       </div>
+
       }
 
     </div>
 
-    <mat-paginator [length]="totalCount()" [pageIndex]="pageIndex" [pageSize]="pageSize"
-      [pageSizeOptions]="[10, 20, 50]" [showFirstLastButtons]="true" (page)="onPageChange($event)">
-    </mat-paginator>
+    <footer class="table-footer">
+
+      <div class="table-summary">
+        {{ totalCount() }} registro(s) encontrado(s)
+      </div>
+
+      <mat-paginator [length]="totalCount()" [pageIndex]="pageIndex" [pageSize]="pageSize"
+        [pageSizeOptions]="[10, 20, 50]" [showFirstLastButtons]="true" (page)="onPageChange($event)">
+      </mat-paginator>
+
+    </footer>
 
   </section>
 
-</div>
+</div>a

@@ -1,148 +1,248 @@
 <div class="page-container">
 
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <a routerLink="/">
+      <mat-icon>home</mat-icon>
+      Início
+    </a>
+
+    <mat-icon class="breadcrumb-separator">
+      chevron_right
+    </mat-icon>
+
+    <a routerLink="/invoices">
+      Faturamento
+    </a>
+
+    <mat-icon class="breadcrumb-separator">
+      chevron_right
+    </mat-icon>
+
+    <a routerLink="/invoices">
+      Notas fiscais
+    </a>
+
+    <mat-icon class="breadcrumb-separator">
+      chevron_right
+    </mat-icon>
+
+    <strong>
+      Nova nota fiscal
+    </strong>
+  </nav>
+
   <header class="page-header">
-    <div>
-      <a routerLink="/invoices" class="back-link">
 
-        <mat-icon>arrow_back</mat-icon>
-        Notas fiscais
+    <div class="page-heading">
 
-      </a>
+      <div class="page-icon">
+        <mat-icon>post_add</mat-icon>
+      </div>
 
-      <h1>Nova nota fiscal</h1>
+      <div>
+        <h1>Nova nota fiscal</h1>
 
-      <p>
-        Adicione os produtos e quantidades que compõem a nota.
-      </p>
+        <p>
+          Adicione os produtos e quantidades que compõem a nota.
+        </p>
+      </div>
+
     </div>
+
   </header>
 
   <form class="form-card" [formGroup]="form" (ngSubmit)="save()">
 
-    <div class="form-header">
-      <div>
-        <h2>Itens da nota</h2>
+    <header class="form-header">
 
-        <p>
-          Pesquise os produtos por código ou descrição.
-        </p>
-      </div>
+      <div class="form-header-content">
 
-      <button mat-stroked-button type="button" (click)="addItem()">
-
-        <mat-icon>add</mat-icon>
-        Adicionar item
-
-      </button>
-    </div>
-
-    <div class="items-container" formArrayName="items">
-
-      @for (
-      item of items.controls;
-      track item;
-      let index = $index
-      ) {
-
-      <div class="invoice-item" [formGroupName]="index">
-
-        <div class="item-number">
-          {{ index + 1 }}
+        <div class="form-section-icon">
+          <mat-icon>receipt_long</mat-icon>
         </div>
 
-        <mat-form-field appearance="outline" class="product-field" subscriptSizing="dynamic">
+        <div>
+          <h2>Itens da nota</h2>
 
-          <mat-label>Produto</mat-label>
+          <p>
+            Pesquise os produtos por código ou descrição e informe as quantidades.
+          </p>
+        </div>
 
-          <mat-icon matPrefix>
-            search
-          </mat-icon>
+      </div>
 
-          <input matInput formControlName="productSearch" [matAutocomplete]="productAutocomplete"
-            (input)="onProductSearchChanged(index)" placeholder="Digite ao menos 2 caracteres" autocomplete="off">
+      <div class="form-header-actions">
 
-          <mat-autocomplete #productAutocomplete="matAutocomplete" [displayWith]="displayProduct" (optionSelected)="
-                onProductSelected(
-                  index,
-                  $event.option.value
-                )
-              ">
+        <span class="items-summary">
+          <strong>{{ items.length }}</strong>
+          item(ns)
+        </span>
 
-            @for (product of productOptions[index] | async;track product.id) {
+        <button mat-stroked-button type="button" class="secondary-action" (click)="addItem()">
 
-            <mat-option [value]="product">
+          <mat-icon>add</mat-icon>
 
-              <div class="product-option">
-
-                <div class="product-info">
-                  <strong>
-                    {{ product.code }}
-                  </strong>
-
-                  <span>
-                    {{ product.description }}
-                  </span>
-                </div>
-
-                <span class="stock-info">
-                  Saldo: {{ product.stock }}
-                </span>
-                @if (getSelectedProduct(index); as product) {
-                <div class="stock-hint">
-                  Estoque disponível:
-                  <strong>{{ product.stock }}</strong>
-                </div>
-                }
-
-              </div>
-
-            </mat-option>
-
-            }
-
-          </mat-autocomplete>
-
-          @if (item.controls.productSearch.touched &&!item.controls.productId.value) {
-          <mat-error>
-            Selecione um produto válido.
-          </mat-error>
-          }
-
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" class="quantity-field" subscriptSizing="dynamic">
-
-          <mat-label>Quantidade</mat-label>
-
-          <input matInput type="number" min="1" formControlName="quantity">
-
-          @if (item.controls.quantity.touched &&item.controls.quantity.hasError('required')) {
-          <mat-error>
-            Informe a quantidade.
-          </mat-error>
-          }
-
-          @if (
-          item.controls.quantity.touched &&
-          item.controls.quantity.hasError('min')
-          ) {
-          <mat-error>
-            A quantidade deve ser maior que zero.
-          </mat-error>
-          }
-
-        </mat-form-field>
-
-        <button mat-icon-button type="button" class="remove-button" aria-label="Remover item"
-          (click)="removeItem(index)">
-
-          <mat-icon>
-            delete_outline
-          </mat-icon>
-
+          Adicionar item
         </button>
 
       </div>
+
+    </header>
+
+    <div class="invoice-items" formArrayName="items">
+
+      @for (item of items.controls;track item;let index = $index) {
+
+      <section class="invoice-item-card" [formGroupName]="index">
+
+        <header class="invoice-item-header">
+
+          <div class="item-identification">
+
+            <div class="item-number">
+              {{ index + 1 }}
+            </div>
+
+            <div>
+              <strong>
+                Item {{ index + 1 }}
+              </strong>
+
+              <span>
+                Selecione o produto e informe a quantidade.
+              </span>
+            </div>
+
+          </div>
+
+          <button mat-icon-button type="button" class="remove-button" aria-label="Remover item" title="Remover item"
+            (click)="removeItem(index)">
+
+            <mat-icon>
+              delete_outline
+            </mat-icon>
+
+          </button>
+
+        </header>
+
+        <div class="invoice-item-content">
+
+          <div class="product-column">
+
+            <mat-form-field appearance="outline" class="product-field" subscriptSizing="dynamic">
+
+              <mat-label>Produto</mat-label>
+
+              <mat-icon matPrefix>
+                search
+              </mat-icon>
+
+              <input matInput formControlName="productSearch" [matAutocomplete]="productAutocomplete"
+                (input)="onProductSearchChanged(index)" placeholder="Digite código ou descrição" autocomplete="off">
+
+              <mat-autocomplete #productAutocomplete="matAutocomplete" [displayWith]="displayProduct" (optionSelected)="
+                    onProductSelected(
+                      index,
+                      $event.option.value
+                    )
+                  ">
+
+                @for (
+                product of productOptions[index] | async;
+                track product.id
+                ) {
+
+                <mat-option [value]="product">
+
+                  <div class="product-option">
+
+                    <div class="product-info">
+
+                      <strong>
+                        {{ product.code }}
+                      </strong>
+
+                      <span>
+                        {{ product.description }}
+                      </span>
+
+                    </div>
+
+                    <span class="stock-info">
+                      Saldo: {{ product.stock }}
+                    </span>
+
+                  </div>
+
+                </mat-option>
+
+                }
+
+              </mat-autocomplete>
+
+              @if (
+              item.controls.productSearch.touched &&
+              !item.controls.productId.value
+              ) {
+              <mat-error>
+                Selecione um produto válido.
+              </mat-error>
+              }
+
+            </mat-form-field>
+
+            @if (getSelectedProduct(index); as product) {
+
+            <div class="selected-product-info">
+
+              <div>
+                <mat-icon>inventory_2</mat-icon>
+
+                <span>
+                  Estoque disponível
+                </span>
+              </div>
+
+              <strong>
+                {{ product.stock }}
+              </strong>
+
+            </div>
+
+            }
+
+          </div>
+
+          <mat-form-field appearance="outline" class="quantity-field" subscriptSizing="dynamic">
+
+            <mat-label>Quantidade</mat-label>
+
+            <input matInput type="number" min="1" formControlName="quantity">
+
+            @if (
+            item.controls.quantity.touched &&
+            item.controls.quantity.hasError('required')
+            ) {
+            <mat-error>
+              Informe a quantidade.
+            </mat-error>
+            }
+
+            @if (
+            item.controls.quantity.touched &&
+            item.controls.quantity.hasError('min')
+            ) {
+            <mat-error>
+              A quantidade deve ser maior que zero.
+            </mat-error>
+            }
+
+          </mat-form-field>
+
+        </div>
+
+      </section>
 
       }
 
@@ -150,13 +250,14 @@
 
     <footer class="form-actions">
 
-      <button mat-stroked-button type="button" routerLink="/invoices" [disabled]="isSaving()">
+      <button mat-stroked-button type="button" routerLink="/invoices" class="back-action" [disabled]="isSaving()">
 
-        Cancelar
+        <mat-icon>arrow_back</mat-icon>
 
+        Voltar
       </button>
 
-      <button mat-flat-button type="submit" [disabled]="isSaving()">
+      <button mat-flat-button type="submit" class="primary-action" [disabled]="isSaving()">
 
         @if (isSaving()) {
         <mat-spinner diameter="18"></mat-spinner>
@@ -165,7 +266,6 @@
         }
 
         Salvar nota
-
       </button>
 
     </footer>
