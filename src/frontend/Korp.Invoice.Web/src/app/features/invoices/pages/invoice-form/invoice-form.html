@@ -1,4 +1,5 @@
 <div class="page-container">
+@if (isLoading()) {
 
   <nav class="breadcrumb" aria-label="Breadcrumb">
     <a routerLink="/">
@@ -27,7 +28,7 @@
     </mat-icon>
 
     <strong>
-      Nova nota fiscal
+      {{isEditMode()? 'Editar nota fiscal': 'Nova nota fiscal'}}
     </strong>
   </nav>
 
@@ -40,17 +41,19 @@
       </div>
 
       <div>
-        <h1>Nova nota fiscal</h1>
+        <h1>
+          {{isEditMode()? 'Editar nota fiscal': 'Nova nota fiscal'}}
+        </h1>
 
         <p>
-          Adicione os produtos e quantidades que compõem a nota.
+          {{isEditMode()? 'Atualize os produtos e quantidades da nota fiscal.': 'Adicione os produtos e quantidades que compõem a nota.'}}
         </p>
       </div>
 
     </div>
 
   </header>
-
+} @else {
   <form class="form-card" [formGroup]="form" (ngSubmit)="save()">
 
     <header class="form-header">
@@ -138,20 +141,20 @@
                 search
               </mat-icon>
 
-              <input matInput formControlName="productSearch" [matAutocomplete]="productAutocomplete"
-                (input)="onProductSearchChanged(index)" placeholder="Digite código ou descrição" autocomplete="off">
+              <input
+              matInput
+              formControlName="productSearch"
+              [matAutocomplete]="productAutocomplete"
+              (input)="onProductSearchChanged(index)"
+              placeholder="Digite código ou descrição"
+              autocomplete="off">
 
-              <mat-autocomplete #productAutocomplete="matAutocomplete" [displayWith]="displayProduct" (optionSelected)="
-                    onProductSelected(
-                      index,
-                      $event.option.value
-                    )
-                  ">
+              <mat-autocomplete
+              #productAutocomplete="matAutocomplete"
+              [displayWith]="displayProduct"
+              (optionSelected)="onProductSelected(index,$event.option.value)">
 
-                @for (
-                product of productOptions[index] | async;
-                track product.id
-                ) {
+                @for (product of productOptions[index] | async;track product.id) {
 
                 <mat-option [value]="product">
 
@@ -159,13 +162,8 @@
 
                     <div class="product-info">
 
-                      <strong>
-                        {{ product.code }}
-                      </strong>
-
-                      <span>
-                        {{ product.description }}
-                      </span>
+                      <strong>{{ product.code }}</strong>
+                      <span>{{ product.description }}</span>
 
                     </div>
 
@@ -181,10 +179,7 @@
 
               </mat-autocomplete>
 
-              @if (
-              item.controls.productSearch.touched &&
-              !item.controls.productId.value
-              ) {
+              @if (item.controls.productSearch.touched &&!item.controls.productId.value) {
               <mat-error>
                 Selecione um produto válido.
               </mat-error>
@@ -220,19 +215,13 @@
 
             <input matInput type="number" min="1" formControlName="quantity">
 
-            @if (
-            item.controls.quantity.touched &&
-            item.controls.quantity.hasError('required')
-            ) {
+            @if (item.controls.quantity.touched &&item.controls.quantity.hasError('required')) {
             <mat-error>
               Informe a quantidade.
             </mat-error>
             }
 
-            @if (
-            item.controls.quantity.touched &&
-            item.controls.quantity.hasError('min')
-            ) {
+            @if (item.controls.quantity.touched &&item.controls.quantity.hasError('min')) {
             <mat-error>
               A quantidade deve ser maior que zero.
             </mat-error>
@@ -265,11 +254,11 @@
         <mat-icon>save</mat-icon>
         }
 
-        Salvar nota
+        {{isEditMode()? 'Salvar alterações': 'Salvar nota'}}
       </button>
 
     </footer>
 
   </form>
-
+}
 </div>

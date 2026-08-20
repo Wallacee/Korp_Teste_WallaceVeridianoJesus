@@ -22,6 +22,8 @@ import { Product } from '../../../products/models/product.model';
 
 import { NotificationService } from '../../../../shared/services/notification.service';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog';
+import { HttpErrorResponse } from '@angular/common/http';
+import { ApiValidationProblem } from '../../../../shared/models/api-validation-problem';
 
 @Component({
   selector: 'app-invoice-details',
@@ -184,10 +186,33 @@ export class InvoiceDetails implements OnInit {
           this.notification.success('Nota fiscal impressa e fechada com sucesso.');
           setTimeout(() => { window.print(); }, 500);
         },
+error: (error: HttpErrorResponse) => {
+  const problem =
+    error.error as ApiValidationProblem | undefined;
 
-        error: error => {
-          this.notification.error(error.error?.detail ?? 'Não foi possível imprimir a nota fiscal.');
-        }
+  if (error.status === 409) {
+    this.notification.warning(
+      problem?.detail ??
+      'Não foi possível imprimir a nota devido a um conflito de estoque.'
+    );
+
+    return;
+  }
+
+  if (error.status === 503) {
+    this.notification.error(
+      problem?.detail ??
+      'O serviço de estoque está temporariamente indisponível.'
+    );
+
+    return;
+  }
+
+  this.notification.error(
+    problem?.detail ??
+    'Não foi possível imprimir a nota fiscal.'
+  );
+}
       });
   }
 

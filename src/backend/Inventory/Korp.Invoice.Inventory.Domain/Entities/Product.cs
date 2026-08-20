@@ -37,7 +37,7 @@ public class Product : BaseEntity
             throw new ArgumentOutOfRangeException(nameof(quantity), "A quantidade deve ser maior que zero.");
 
         if (quantity > Stock)
-            throw new InsufficientStockException(Stock, quantity);
+            throw new InsufficientStockException(Code, Stock, quantity);
 
         Stock -= quantity;
     }

@@ -1,5 +1,5 @@
 import { FormGroup } from '@angular/forms';
-import { ApiValidationProblem } from '../models/ApiValidationProblem';
+import { ApiValidationProblem } from '../models/api-validation-problem';
 
 
 export function applyApiValidationErrors(
