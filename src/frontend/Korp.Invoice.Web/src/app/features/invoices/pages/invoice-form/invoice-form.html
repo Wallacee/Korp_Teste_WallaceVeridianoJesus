@@ -1,0 +1,175 @@
+<div class="page-container">
+
+  <header class="page-header">
+    <div>
+      <a routerLink="/invoices" class="back-link">
+
+        <mat-icon>arrow_back</mat-icon>
+        Notas fiscais
+
+      </a>
+
+      <h1>Nova nota fiscal</h1>
+
+      <p>
+        Adicione os produtos e quantidades que compõem a nota.
+      </p>
+    </div>
+  </header>
+
+  <form class="form-card" [formGroup]="form" (ngSubmit)="save()">
+
+    <div class="form-header">
+      <div>
+        <h2>Itens da nota</h2>
+
+        <p>
+          Pesquise os produtos por código ou descrição.
+        </p>
+      </div>
+
+      <button mat-stroked-button type="button" (click)="addItem()">
+
+        <mat-icon>add</mat-icon>
+        Adicionar item
+
+      </button>
+    </div>
+
+    <div class="items-container" formArrayName="items">
+
+      @for (
+      item of items.controls;
+      track item;
+      let index = $index
+      ) {
+
+      <div class="invoice-item" [formGroupName]="index">
+
+        <div class="item-number">
+          {{ index + 1 }}
+        </div>
+
+        <mat-form-field appearance="outline" class="product-field" subscriptSizing="dynamic">
+
+          <mat-label>Produto</mat-label>
+
+          <mat-icon matPrefix>
+            search
+          </mat-icon>
+
+          <input matInput formControlName="productSearch" [matAutocomplete]="productAutocomplete"
+            (input)="onProductSearchChanged(index)" placeholder="Digite ao menos 2 caracteres" autocomplete="off">
+
+          <mat-autocomplete #productAutocomplete="matAutocomplete" [displayWith]="displayProduct" (optionSelected)="
+                onProductSelected(
+                  index,
+                  $event.option.value
+                )
+              ">
+
+            @for (product of productOptions[index] | async;track product.id) {
+
+            <mat-option [value]="product">
+
+              <div class="product-option">
+
+                <div class="product-info">
+                  <strong>
+                    {{ product.code }}
+                  </strong>
+
+                  <span>
+                    {{ product.description }}
+                  </span>
+                </div>
+
+                <span class="stock-info">
+                  Saldo: {{ product.stock }}
+                </span>
+                @if (getSelectedProduct(index); as product) {
+                <div class="stock-hint">
+                  Estoque disponível:
+                  <strong>{{ product.stock }}</strong>
+                </div>
+                }
+
+              </div>
+
+            </mat-option>
+
+            }
+
+          </mat-autocomplete>
+
+          @if (item.controls.productSearch.touched &&!item.controls.productId.value) {
+          <mat-error>
+            Selecione um produto válido.
+          </mat-error>
+          }
+
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="quantity-field" subscriptSizing="dynamic">
+
+          <mat-label>Quantidade</mat-label>
+
+          <input matInput type="number" min="1" formControlName="quantity">
+
+          @if (item.controls.quantity.touched &&item.controls.quantity.hasError('required')) {
+          <mat-error>
+            Informe a quantidade.
+          </mat-error>
+          }
+
+          @if (
+          item.controls.quantity.touched &&
+          item.controls.quantity.hasError('min')
+          ) {
+          <mat-error>
+            A quantidade deve ser maior que zero.
+          </mat-error>
+          }
+
+        </mat-form-field>
+
+        <button mat-icon-button type="button" class="remove-button" aria-label="Remover item"
+          (click)="removeItem(index)">
+
+          <mat-icon>
+            delete_outline
+          </mat-icon>
+
+        </button>
+
+      </div>
+
+      }
+
+    </div>
+
+    <footer class="form-actions">
+
+      <button mat-stroked-button type="button" routerLink="/invoices" [disabled]="isSaving()">
+
+        Cancelar
+
+      </button>
+
+      <button mat-flat-button type="submit" [disabled]="isSaving()">
+
+        @if (isSaving()) {
+        <mat-spinner diameter="18"></mat-spinner>
+        } @else {
+        <mat-icon>save</mat-icon>
+        }
+
+        Salvar nota
+
+      </button>
+
+    </footer>
+
+  </form>
+
+</div>

@@ -20,18 +20,18 @@ public sealed class FiscalInvoicesController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateAsync(CreateInvoiceRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> CreateAsync([FromBody] CreateInvoiceRequest request, CancellationToken cancellationToken)
     {
         var invoice = await _invoiceAppService.CreateAsync(request, cancellationToken);
 
-        return CreatedAtAction(nameof(GetByIdAsync), new { id = invoice.Id }, invoice);
+        return StatusCode(StatusCodes.Status201Created, invoice);
     }
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         return Ok(await _invoiceAppService.GetByIdAsync(id, cancellationToken));
     }
-    
+
     [HttpPost("{id:guid}/process")]
     public async Task<IActionResult> ProcessAsync(Guid id, CancellationToken cancellationToken)
     {

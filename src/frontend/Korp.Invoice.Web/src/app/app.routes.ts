@@ -23,8 +23,21 @@ export const routes: Routes = [
       },
       {
         path: 'invoices',
-        loadComponent: () =>import('./features/invoices/pages/invoice-list/invoice-list').then(m => m.InvoiceList)
-      }, {
+        loadComponent: () => import('./features/invoices/pages/invoice-list/invoice-list').then(m => m.InvoiceList)
+      },
+      {
+        path: 'invoices/new',
+        loadComponent: () =>
+          import('./features/invoices/pages/invoice-form/invoice-form')
+            .then(m => m.InvoiceForm)
+      },
+      {
+        path: 'invoices',
+        loadComponent: () =>
+          import('./features/invoices/pages/invoice-list/invoice-list')
+            .then(m => m.InvoiceList)
+      },
+      {
         path: 'products',
         component: ProductList
       }

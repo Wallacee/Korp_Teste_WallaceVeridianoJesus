@@ -14,7 +14,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { InvoiceApiService } from '../../services/invoice-api.service';
 import { Invoice } from '../../models/invoice.model';
 import { InvoiceSearchRequest } from '../../models/invoice-search-request.model';
-
+import { RouterLink } from '@angular/router';
 @Component({
   selector: 'app-invoice-list',
   standalone: true,
@@ -28,7 +28,8 @@ import { InvoiceSearchRequest } from '../../models/invoice-search-request.model'
     MatPaginatorModule,
     MatSortModule,
     MatTableModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    RouterLink
   ],
   templateUrl: './invoice-list.html',
   styleUrl: './invoice-list.scss'
