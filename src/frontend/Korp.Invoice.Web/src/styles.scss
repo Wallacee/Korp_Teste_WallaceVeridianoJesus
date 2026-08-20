@@ -37,3 +37,132 @@ body {
   height: 100%;
 }
 /* You can add global styles to this file, and also import other style files */
+@page {
+  size: A4 portrait;
+  margin: 12mm;
+}
+
+@media print {
+  html,
+  body {
+    width: 100%;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #fff !important;
+  }
+
+  /* Esconde absolutamente tudo da aplicação */
+  body * {
+    visibility: hidden !important;
+  }
+
+  /* Mostra somente o documento da nota */
+  .invoice-print,
+  .invoice-print * {
+    visibility: visible !important;
+  }
+
+  .invoice-print {
+    display: block !important;
+
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    width: 100%;
+
+    margin: 0;
+    padding: 0;
+
+    background: #fff;
+    color: #000;
+
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 10pt;
+  }
+
+  .print-header {
+    padding-bottom: 10mm;
+    border-bottom: 1px solid #333;
+    text-align: center;
+
+    h1 {
+      margin: 0;
+      font-size: 18pt;
+      font-weight: 700;
+    }
+
+    h2 {
+      margin: 3mm 0 0;
+      font-size: 14pt;
+      font-weight: 600;
+    }
+  }
+
+  .print-info {
+    display: flex;
+    justify-content: space-between;
+    gap: 10mm;
+
+    padding: 6mm 0;
+
+    font-size: 9pt;
+  }
+
+  .print-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+
+    th,
+    td {
+      padding: 3mm 2mm;
+      border-bottom: 1px solid #ccc;
+      text-align: left;
+      vertical-align: top;
+      word-break: break-word;
+    }
+
+    th {
+      border-bottom: 1px solid #333;
+      font-size: 9pt;
+      font-weight: 700;
+    }
+
+    td {
+      font-size: 9pt;
+    }
+
+    th:nth-child(1),
+    td:nth-child(1) {
+      width: 25%;
+    }
+
+    th:nth-child(2),
+    td:nth-child(2) {
+      width: 55%;
+    }
+
+    th:nth-child(3),
+    td:nth-child(3) {
+      width: 20%;
+      text-align: right;
+    }
+  }
+
+  .print-footer {
+    margin-top: 10mm;
+    padding-top: 4mm;
+
+    border-top: 1px solid #ccc;
+
+    text-align: center;
+    font-size: 8pt;
+  }
+
+  /* Não deixa overlay/snackbar aparecer */
+  .cdk-overlay-container,
+  .mat-mdc-snack-bar-container {
+    display: none !important;
+  }
+}

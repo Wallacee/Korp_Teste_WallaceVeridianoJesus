@@ -1,0 +1,29 @@
+@media print {
+  .sidebar,
+  .topbar,
+  .back-link,
+  button,
+  .form-actions {
+    display: none !important;
+  }
+
+  .content,
+  .main-content,
+  .page-container {
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .content-card {
+    border: 0;
+    box-shadow: none;
+  }
+
+  body {
+    background: #fff;
+  }
+}
+.invoice-print {
+  display: none;
+}

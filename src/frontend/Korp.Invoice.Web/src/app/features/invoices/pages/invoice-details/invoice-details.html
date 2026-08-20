@@ -41,19 +41,16 @@
     </div>
 
     @if (invoice.status === 1) {
-
-    <button mat-flat-button type="button" [disabled]="isProcessing()" (click)="processInvoice()">
+    <button mat-flat-button type="button" [disabled]="isProcessing()" (click)="printInvoice()">
 
       @if (isProcessing()) {
       <mat-spinner diameter="18"></mat-spinner>
       } @else {
-      <mat-icon>play_arrow</mat-icon>
+      <mat-icon>print</mat-icon>
       }
 
-      Processar nota
-
+      Imprimir nota
     </button>
-
     }
 
   </header>
@@ -140,3 +137,60 @@
   }
 
 </div>
+@if (invoice(); as invoice) {
+  <section class="invoice-print">
+
+    <div class="print-header">
+      <h1>Korp Invoice</h1>
+      <h2>Nota Fiscal #{{ invoice.number }}</h2>
+    </div>
+
+    <div class="print-info">
+      <span>
+        <strong>Status:</strong>
+        {{ getStatusLabel(invoice.status) }}
+      </span>
+
+      <span>
+        <strong>Quantidade de itens:</strong>
+        {{ invoice.items.length }}
+      </span>
+    </div>
+
+    <table class="print-table">
+      <thead>
+        <tr>
+          <th>Código</th>
+          <th>Produto</th>
+          <th>Quantidade</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        @for (item of invoice.items; track item.productId) {
+          <tr>
+            <td>
+              {{ getProduct(item.productId)?.code ?? '-' }}
+            </td>
+
+            <td>
+              {{
+                getProduct(item.productId)?.description
+                  ?? 'Produto não encontrado'
+              }}
+            </td>
+
+            <td>
+              {{ item.quantity }}
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+
+    <div class="print-footer">
+      Documento emitido pelo Korp Invoice
+    </div>
+
+  </section>
+}
