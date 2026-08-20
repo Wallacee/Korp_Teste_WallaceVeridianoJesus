@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Shared\Korp.Invoice.Shared\Korp.Invoice.Shared.csproj" />
     <ProjectReference Include="..\Korp.Invoice.Inventory.Domain\Korp.Invoice.Inventory.Domain.csproj" />
   </ItemGroup>
 
