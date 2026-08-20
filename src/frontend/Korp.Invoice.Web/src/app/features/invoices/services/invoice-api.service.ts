@@ -6,6 +6,7 @@ import { environment } from '../../../../environments/environment';
 import { PagedResult } from '../../../core/models/paged-result.model';
 import { Invoice } from '../models/invoice.model';
 import { InvoiceSearchRequest } from '../models/invoice-search-request.model';
+import { CreateInvoiceRequest } from '../models/create-invoice-request.model';
 
 @Injectable({
   providedIn: 'root'
@@ -26,6 +27,10 @@ export class InvoiceApiService {
 
     return this.http.get<PagedResult<Invoice>>(this.apiUrl,{ params });
   }
+
+  create(request: CreateInvoiceRequest): Observable<Invoice> {
+    return this.http.post<Invoice>(this.apiUrl, request);
+}
 
   getById(id: string): Observable<Invoice> {
     return this.http.get<Invoice>(`${this.apiUrl}/${id}`);
