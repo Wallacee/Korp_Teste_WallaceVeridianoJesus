@@ -1,4 +1,8 @@
 <Solution>
+  <Folder Name="/docker/" />
+  <Folder Name="/docker/postgres/">
+    <File Path="init-multiple-databases.sql" />
+  </Folder>
   <Folder Name="/Itens de Solução/">
     <File Path="Directory.Build.props" />
     <File Path="README.md" />
@@ -20,7 +24,7 @@
     <Project Path="src/backend/Inventory/Korp.Invoice.Inventory.Domain/Korp.Invoice.Inventory.Domain.csproj" />
     <Project Path="src/backend/Inventory/Korp.Invoice.Inventory.Infrastructure/Korp.Invoice.Inventory.Infrastructure.csproj" />
   </Folder>
-  <Folder Name="/src/backend/shared/" Id="5e28066d-cf2f-eacf-f514-6261098ea812">
+  <Folder Name="/src/backend/shared/">
     <Project Path="src/backend/Shared/Korp.Invoice.Shared/Korp.Invoice.Shared.csproj" />
   </Folder>
   <Folder Name="/tests/">
