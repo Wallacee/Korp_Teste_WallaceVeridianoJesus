@@ -71,7 +71,6 @@ export class ProductList implements OnInit {
   );
   ngOnInit(): void {
     this.configureSearch();
-    debugger
     this.loadProducts();
   }
 
