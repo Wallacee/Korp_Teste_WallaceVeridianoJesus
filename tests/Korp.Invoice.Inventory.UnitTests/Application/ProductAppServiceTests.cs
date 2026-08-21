@@ -1,5 +1,6 @@
 using FluentValidation;
 using FluentValidation.Results;
+using Korp.Invoice.Inventory.Application.ExternalServices;
 using Korp.Invoice.Inventory.Application.Requests;
 using Korp.Invoice.Inventory.Application.Services;
 using Korp.Invoice.Inventory.Domain.Entities;
@@ -17,18 +18,8 @@ public sealed class ProductAppServiceTests
     private readonly Mock<IInventoryUnitOfWork> _unitOfWorkMock = new();
     private readonly Mock<IValidator<ProcessStockRequest>> _processStockValidatorMock = new();
     private readonly Mock<IValidator<UpdateProductRequest>> _updateValidatorMock = new();
+    private readonly Mock<IBillingService> _billingServiceMock = new();
 
-
-    private ProductAppService CreateService()
-    {
-        return new ProductAppService(_repositoryMock.Object
-            , _validatorMock.Object
-            , _debitStockValidatorMock.Object
-            , _stockOperationRepositoryMock.Object
-            , _unitOfWorkMock.Object
-            , _processStockValidatorMock.Object
-            , _updateValidatorMock.Object);
-    }
     [Fact]
     public async Task CreateAsync_ShouldCreateProduct_WhenRequestIsValid()
     {
@@ -94,5 +85,17 @@ public sealed class ProductAppServiceTests
     ]));
 
         var service = CreateService(); await Assert.ThrowsAsync<NotFoundException>(() => service.DebitStockAsync(id, request));
+    }
+
+    private ProductAppService CreateService()
+    {
+        return new ProductAppService(_repositoryMock.Object
+            , _validatorMock.Object
+            , _debitStockValidatorMock.Object
+            , _stockOperationRepositoryMock.Object
+            , _unitOfWorkMock.Object
+            , _processStockValidatorMock.Object
+            , _updateValidatorMock.Object
+            , _billingServiceMock.Object);
     }
 }

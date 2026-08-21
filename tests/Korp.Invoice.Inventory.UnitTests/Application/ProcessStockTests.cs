@@ -1,5 +1,6 @@
 using FluentValidation;
 using FluentValidation.Results;
+using Korp.Invoice.Inventory.Application.ExternalServices;
 using Korp.Invoice.Inventory.Application.Requests;
 using Korp.Invoice.Inventory.Application.Services;
 using Korp.Invoice.Inventory.Domain.Interfaces;
@@ -16,6 +17,7 @@ public sealed class ProcessStockTests
     private readonly Mock<IValidator<DebitStockRequest>> _debitStockValidatorMock = new();
     private readonly Mock<IValidator<ProcessStockRequest>> _processStockValidatorMock = new();
     private readonly Mock<IValidator<UpdateProductRequest>> _updateValidatorMock = new();
+    private readonly Mock<IBillingService> _billingServiceMock = new();
 
 
     [Fact]
@@ -47,6 +49,7 @@ public sealed class ProcessStockTests
             _stockOperationRepositoryMock.Object,
             _unitOfWorkMock.Object,
             _processStockValidatorMock.Object,
-            _updateValidatorMock.Object);
+            _updateValidatorMock.Object,
+            _billingServiceMock.Object);
     }
 }
