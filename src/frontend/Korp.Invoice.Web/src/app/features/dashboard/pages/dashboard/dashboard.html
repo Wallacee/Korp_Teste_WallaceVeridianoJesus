@@ -1,0 +1,351 @@
+<div class="page-container dashboard-page">
+
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+
+    <a routerLink="/">
+      <mat-icon>home</mat-icon>
+      Início
+    </a>
+
+    <mat-icon class="breadcrumb-separator">
+      chevron_right
+    </mat-icon>
+
+    <strong>
+      Visão geral
+    </strong>
+
+  </nav>
+
+  <header class="page-header">
+
+    <div class="page-heading">
+
+      <div class="page-icon">
+        <mat-icon>dashboard</mat-icon>
+      </div>
+
+      <div>
+        <h1>Visão geral</h1>
+
+        <p>
+          Acompanhe os principais indicadores de estoque e faturamento.
+        </p>
+      </div>
+
+    </div>
+
+    <div class="page-actions">
+
+      <button mat-stroked-button type="button" class="secondary-action" [disabled]="isLoading()"
+        (click)="loadDashboard()">
+
+        <mat-icon>refresh</mat-icon>
+
+        Atualizar
+      </button>
+
+    </div>
+
+  </header>
+
+  @if (isLoading()) {
+
+  <section class="dashboard-loading">
+    <mat-spinner diameter="42"></mat-spinner>
+
+    <span>
+      Carregando indicadores...
+    </span>
+  </section>
+
+  } @else {
+
+  <section class="kpi-grid">
+
+    <article class="kpi-card">
+
+      <div class="kpi-icon blue">
+        <mat-icon>inventory_2</mat-icon>
+      </div>
+
+      <div class="kpi-content">
+        <span>Produtos cadastrados</span>
+
+        <strong>
+          {{ inventorySummary()?.totalProducts ?? 0 }}
+        </strong>
+
+        <small>
+          Catálogo ativo no estoque
+        </small>
+      </div>
+
+    </article>
+
+    <article class="kpi-card">
+
+      <div class="kpi-icon emerald">
+        <mat-icon>warehouse</mat-icon>
+      </div>
+
+      <div class="kpi-content">
+        <span>Saldo total</span>
+
+        <strong>
+          {{ inventorySummary()?.totalStock ?? 0 }}
+        </strong>
+
+        <small>
+          Unidades disponíveis
+        </small>
+      </div>
+
+    </article>
+
+    <article class="kpi-card">
+
+      <div class="kpi-icon amber">
+        <mat-icon>warning_amber</mat-icon>
+      </div>
+
+      <div class="kpi-content">
+        <span>Estoque baixo</span>
+
+        <strong>
+          {{ inventorySummary()?.lowStockProducts ?? 0 }}
+        </strong>
+
+        <small>
+          Produtos com até 5 unidades
+        </small>
+      </div>
+
+    </article>
+
+    <article class="kpi-card">
+
+      <div class="kpi-icon violet">
+        <mat-icon>pending_actions</mat-icon>
+      </div>
+
+      <div class="kpi-content">
+        <span>Notas abertas</span>
+
+        <strong>
+          {{ billingSummary()?.openInvoices ?? 0 }}
+        </strong>
+
+        <small>
+          Aguardando processamento
+        </small>
+      </div>
+
+    </article>
+
+    <article class="kpi-card">
+
+      <div class="kpi-icon green">
+        <mat-icon>task_alt</mat-icon>
+      </div>
+
+      <div class="kpi-content">
+        <span>Notas fechadas</span>
+
+        <strong>
+          {{ billingSummary()?.closedInvoices ?? 0 }}
+        </strong>
+
+        <small>
+          Processadas com sucesso
+        </small>
+      </div>
+
+    </article>
+
+    <article class="kpi-card">
+
+      <div class="kpi-icon cyan">
+        <mat-icon>moving</mat-icon>
+      </div>
+
+      <div class="kpi-content">
+        <span>Unidades processadas</span>
+
+        <strong>
+          {{ billingSummary()?.processedItems ?? 0 }}
+        </strong>
+
+        <small>
+          Saídas registradas nas notas
+        </small>
+      </div>
+
+    </article>
+
+  </section>
+
+  <section class="dashboard-grid">
+
+    <article class="dashboard-card consumption-card">
+
+      <header class="dashboard-card-header">
+
+        <div>
+          <span class="card-eyebrow">
+            MOVIMENTAÇÃO
+          </span>
+
+          <h2>
+            Consumo de estoque
+          </h2>
+
+          <p>
+            Volume de unidades processadas nos últimos 30 dias.
+          </p>
+        </div>
+
+        <div class="metric-indicator">
+          30 dias
+        </div>
+
+      </header>
+
+      <div class="chart-container consumption-chart">
+        <canvas #consumptionChart></canvas>
+      </div>
+
+    </article>
+
+    <article class="dashboard-card intelligence-card">
+
+      <header class="dashboard-card-header">
+
+        <div>
+          <span class="card-eyebrow intelligence">
+            ✦ INTELIGÊNCIA
+          </span>
+
+          <h2>
+            Previsão de consumo
+          </h2>
+
+          <p>
+            Projeção baseada no histórico recente de movimentação.
+          </p>
+        </div>
+
+      </header>
+
+      @if (forecast(); as forecast) {
+
+      @if (forecast.hasEnoughData) {
+      <div class="forecast-summary">
+        <div class="forecast-main">
+          <span>
+            Consumo previsto
+          </span>
+          <strong>
+            {{ forecast.estimatedConsumption }}
+          </strong>
+          <small>
+            unidades nos próximos
+            {{ forecast.forecastDays }}
+            dias
+          </small>
+        </div>
+        <div class="forecast-metrics">
+          <div>
+            <span>Média diária</span>
+            <strong>
+              {{ forecast.dailyAverage }}
+            </strong>
+          </div>
+          <div>
+            <span>Tendência</span>
+            <strong [class.trend-growth]="forecast.trend === 'Crescimento'"
+              [class.trend-reduction]="forecast.trend === 'Redução'">
+              {{ forecast.trend }}
+            </strong>
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="chart-container forecast-chart">
+        <canvas #forecastChart></canvas>
+      </div>
+
+      <div class="ai-footer">
+
+        <mat-icon>
+          auto_awesome
+        </mat-icon>
+
+        <span>
+          Previsão gerada por modelo
+          ML.NET SSA com base nos últimos
+          {{ forecast.historicalDays }} dias.
+        </span>
+
+      </div>
+
+      } @else {
+
+      <div class="intelligence-placeholder">
+
+        <div class="intelligence-icon">
+          <mat-icon>auto_awesome</mat-icon>
+        </div>
+
+        <div>
+          <strong>
+            Histórico insuficiente
+          </strong>
+
+          <p>
+            O modelo precisa de mais dados de consumo
+            para gerar uma previsão confiável.
+          </p>
+        </div>
+
+      </div>
+
+      }
+
+      }
+
+    </article>
+
+    <article class="dashboard-card top-products-card">
+
+      <header class="dashboard-card-header">
+
+        <div>
+          <span class="card-eyebrow">
+            RANKING
+          </span>
+
+          <h2>
+            Produtos mais utilizados
+          </h2>
+
+          <p>
+            Produtos com maior volume nas notas fiscais processadas.
+          </p>
+        </div>
+
+      </header>
+
+      <div class="chart-container products-chart">
+        <canvas #topProductsChart></canvas>
+      </div>
+
+    </article>
+
+  </section>
+
+  }
+
+</div>

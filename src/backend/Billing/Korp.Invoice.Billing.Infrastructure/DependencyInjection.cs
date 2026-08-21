@@ -1,6 +1,8 @@
+using Korp.Invoice.Billing.Application.ExternalServices.AI;
 using Korp.Invoice.Billing.Application.ExternalServices.Inventory;
 using Korp.Invoice.Billing.Domain.Interfaces;
 using Korp.Invoice.Billing.Domain.Services;
+using Korp.Invoice.Billing.Infrastructure.ArtificialIntelligence;
 using Korp.Invoice.Billing.Infrastructure.ExternalServices.Inventory;
 using Korp.Invoice.Billing.Infrastructure.Persistence;
 using Korp.Invoice.Billing.Infrastructure.Repositories;
@@ -32,6 +34,7 @@ public static class DependencyInjection
         services.AddScoped<IInvoiceRepository, InvoiceRepository>();
         services.AddScoped<IInvoiceNumberGenerator, PostgresInvoiceNumberGenerator>();
         services.AddScoped<IBillingUnitOfWork, BillingUnitOfWork>();
+        services.AddSingleton<IConsumptionForecastService, MlNetConsumptionForecastService>();
 
         return services;
     }
