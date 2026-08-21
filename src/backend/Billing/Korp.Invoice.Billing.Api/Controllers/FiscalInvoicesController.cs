@@ -50,4 +50,11 @@ public sealed class FiscalInvoicesController : ControllerBase
         await _invoiceAppService.DeleteAsync(id, cancellationToken);
         return NoContent();
     }
+    [HttpGet("products/{productId:guid}/usage")]
+    public async Task<IActionResult> HasProductUsageAsync(Guid productId, CancellationToken cancellationToken)
+    {
+        var isUsed = await _invoiceAppService.HasProductAsync(productId, cancellationToken);
+
+        return Ok(new { isUsed });
+    }
 }

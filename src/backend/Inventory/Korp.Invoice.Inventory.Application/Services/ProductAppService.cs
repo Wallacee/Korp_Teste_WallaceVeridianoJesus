@@ -1,5 +1,6 @@
 using FluentValidation;
 using Korp.Invoice.Inventory.Application.DTOs;
+using Korp.Invoice.Inventory.Application.ExternalServices;
 using Korp.Invoice.Inventory.Application.Interfaces;
 using Korp.Invoice.Inventory.Application.Requests;
 using Korp.Invoice.Inventory.Domain.Entities;
@@ -17,6 +18,7 @@ public sealed class ProductAppService : IProductAppService
     private readonly IInventoryUnitOfWork _unitOfWork;
     private readonly IValidator<ProcessStockRequest> _processStockValidator;
     private readonly IValidator<UpdateProductRequest> _updateValidator;
+    private readonly IBillingService _billingService;
     public ProductAppService(
     IProductRepository productRepository,
     IValidator<CreateProductRequest> createProductValidator,
@@ -24,7 +26,8 @@ public sealed class ProductAppService : IProductAppService
     IStockOperationRepository stockOperationRepository,
     IInventoryUnitOfWork unitOfWork,
     IValidator<ProcessStockRequest> processStockValidator,
-    IValidator<UpdateProductRequest> updateValidator)
+    IValidator<UpdateProductRequest> updateValidator,
+    IBillingService billingService)
     {
         _productRepository = productRepository;
         _createProductValidator = createProductValidator;
@@ -33,6 +36,7 @@ public sealed class ProductAppService : IProductAppService
         _unitOfWork = unitOfWork;
         _processStockValidator = processStockValidator;
         _updateValidator = updateValidator;
+        _billingService = billingService;
     }
     public async Task<ProductDto> CreateAsync(CreateProductRequest request, CancellationToken cancellationToken = default)
     {
@@ -118,7 +122,7 @@ public sealed class ProductAppService : IProductAppService
         var page = Math.Max(request.Page, 1);
         var pageSize = Math.Clamp(request.PageSize, 1, 100);
 
-        var (items, totalCount) = await _productRepository.SearchAsync(request.Search,page,pageSize,request.SortBy,request.SortDirection,cancellationToken);
+        var (items, totalCount) = await _productRepository.SearchAsync(request.Search, page, pageSize, request.SortBy, request.SortDirection, cancellationToken);
 
         return new PagedResult<ProductDto>
         {
@@ -131,19 +135,24 @@ public sealed class ProductAppService : IProductAppService
 
     public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        var product = await _productRepository.GetByIdAsync(id, cancellationToken) ??
-            throw new NotFoundException("Produto", id);
+        var product = await _productRepository.GetByIdAsync(id, cancellationToken) ?? throw new NotFoundException("Produto", id);
+        var isUsed = await _billingService.IsProductInUseAsync(id, cancellationToken);
+
+        if (isUsed)
+            throw new ProductInUseException(product.Code);
+
         await _productRepository.DeleteAsync(product, cancellationToken);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task<IReadOnlyCollection<ProductDto>> GetByIdsAsync(IEnumerable<Guid> ids,CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyCollection<ProductDto>> GetByIdsAsync(IEnumerable<Guid> ids, CancellationToken cancellationToken = default)
     {
         var productIds = ids.Where(id => id != Guid.Empty).Distinct().ToList();
 
         if (productIds.Count == 0)
             return [];
 
-        var products = await _productRepository.GetByIdsAsync(productIds,cancellationToken);
+        var products = await _productRepository.GetByIdsAsync(productIds, cancellationToken);
 
         return [.. products.Select(Map)];
     }
