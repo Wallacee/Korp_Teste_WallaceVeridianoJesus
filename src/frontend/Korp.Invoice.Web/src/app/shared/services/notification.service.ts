@@ -1,10 +1,11 @@
-import { inject, Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Injectable({
   providedIn: 'root'
 })
 export class NotificationService {
+
   private readonly snackBar = inject(MatSnackBar);
 
   success(message: string): void {
@@ -23,13 +24,16 @@ export class NotificationService {
     this.open(message, 'notification-info');
   }
 
-  private open(message: string, panelClass: string): void {
+  private open(
+    message: string,
+    panelClass: string
+  ): void {
     this.snackBar.open(message, 'Fechar',
       {
-        duration: 4000,
+        duration: 5000,
         horizontalPosition: 'right',
         verticalPosition: 'top',
-        panelClass: panelClass
+        panelClass: ['app-notification', panelClass]
       }
     );
   }
