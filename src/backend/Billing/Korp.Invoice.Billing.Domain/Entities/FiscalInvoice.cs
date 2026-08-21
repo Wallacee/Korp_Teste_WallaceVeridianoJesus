@@ -9,6 +9,8 @@ public sealed class FiscalInvoice
     public long Number { get; private set; }
     public InvoiceStatus Status { get; private set; }
     public IReadOnlyCollection<InvoiceItem> Items => _items.AsReadOnly();
+    public DateTime CreatedAtUtc { get; private set; }
+    public DateTime? ClosedAtUtc { get; private set; }
     protected FiscalInvoice() { }
     public FiscalInvoice(long number)
     {
@@ -16,6 +18,7 @@ public sealed class FiscalInvoice
                 new ArgumentOutOfRangeException(nameof(number), "O número da nota fiscal deve ser maior que zero.");
         Number = number;
         Status = InvoiceStatus.Open;
+        CreatedAtUtc = DateTime.UtcNow;
     }
     public void AddItem(Guid productId, int quantity)
     {
@@ -31,6 +34,7 @@ public sealed class FiscalInvoice
         EnsureCanBeProcessed();
 
         Status = InvoiceStatus.Closed;
+        ClosedAtUtc = DateTime.UtcNow;
     }
     public void EnsureOpen()
     {

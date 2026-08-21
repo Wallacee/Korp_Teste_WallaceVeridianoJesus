@@ -11,6 +11,7 @@ public static class DependencyInjection
     {
         services.AddValidatorsFromAssemblyContaining(typeof(DependencyInjection));
         services.AddScoped<IInvoiceAppService, InvoiceAppService>();
+        services.AddScoped<IDashboardAppService, DashboardAppService>();
 
         return services;
     }

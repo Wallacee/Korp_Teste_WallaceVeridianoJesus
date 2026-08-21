@@ -34,13 +34,13 @@ public sealed class ProductRepository : BaseRepository<Product>, IProductReposit
         Func<IQueryable<Product>, IOrderedQueryable<Product>> orderBy = (sortBy.ToLowerInvariant(), sortDirection.ToLowerInvariant())
             switch
         {
-            ("code", "desc") =>query => query.OrderByDescending(x => x.Code),
-            ("description", "asc") =>query => query.OrderBy(x => x.Description),
-            ("description", "desc") =>query => query.OrderByDescending(x => x.Description),
-            ("stock", "asc") =>query => query.OrderBy(x => x.Stock),
-            ("stock", "desc") =>query => query.OrderByDescending(x => x.Stock),
-            ("createdatutc", "asc") =>query => query.OrderBy(x => x.CreatedAtUtc),
-            ("createdatutc", "desc") =>query => query.OrderByDescending(x => x.CreatedAtUtc),
+            ("code", "desc") => query => query.OrderByDescending(x => x.Code),
+            ("description", "asc") => query => query.OrderBy(x => x.Description),
+            ("description", "desc") => query => query.OrderByDescending(x => x.Description),
+            ("stock", "asc") => query => query.OrderBy(x => x.Stock),
+            ("stock", "desc") => query => query.OrderByDescending(x => x.Stock),
+            ("createdatutc", "asc") => query => query.OrderBy(x => x.CreatedAtUtc),
+            ("createdatutc", "desc") => query => query.OrderByDescending(x => x.CreatedAtUtc),
 
             _ =>
                 query => query.OrderBy(x => x.Code)
@@ -53,4 +53,14 @@ public sealed class ProductRepository : BaseRepository<Product>, IProductReposit
             orderBy,
             cancellationToken);
     }
+
+    public async Task<int> CountAsync(CancellationToken cancellationToken = default)
+       => await DbSet.AsNoTracking().CountAsync(cancellationToken);
+
+    public async Task<int> GetTotalStockAsync(CancellationToken cancellationToken = default)
+    => await DbSet.AsNoTracking().SumAsync(product => product.Stock, cancellationToken);
+
+    public async Task<int> CountLowStockAsync(int threshold, CancellationToken cancellationToken = default)
+    => await DbSet.AsNoTracking().CountAsync(product => product.Stock <= threshold, cancellationToken);
+
 }

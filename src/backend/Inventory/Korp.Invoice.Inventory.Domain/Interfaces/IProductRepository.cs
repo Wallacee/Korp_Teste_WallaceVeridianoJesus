@@ -15,4 +15,8 @@ public interface IProductRepository : IBaseRepository<Product>
         , string sortBy
         , string sortDirection
         , CancellationToken cancellationToken = default);
+
+    Task<int> CountAsync(CancellationToken cancellationToken = default);
+    Task<int> GetTotalStockAsync(CancellationToken cancellationToken = default);
+    Task<int> CountLowStockAsync(int threshold, CancellationToken cancellationToken = default);
 }
