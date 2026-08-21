@@ -29,4 +29,10 @@ public sealed class DashboardController : ControllerBase
         var result = await _dashboardAppService.GetTopProductsAsync(take, cancellationToken);
         return Ok(result);
     }
+    [HttpGet("forecast")]
+    public async Task<IActionResult> GetConsumptionForecastAsync([FromQuery] int historicalDays = 30, [FromQuery] int forecastDays = 7, CancellationToken cancellationToken = default)
+    {
+        var result = await _dashboardAppService.GetConsumptionForecastAsync(historicalDays, forecastDays, cancellationToken);
+        return Ok(result);
+    }
 }

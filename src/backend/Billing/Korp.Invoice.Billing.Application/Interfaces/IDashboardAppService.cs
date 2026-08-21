@@ -9,4 +9,5 @@ public interface IDashboardAppService
     Task<IReadOnlyCollection<DailyConsumptionResponse>> GetDailyConsumptionAsync(int days, CancellationToken cancellationToken = default);
 
     Task<IReadOnlyCollection<TopProductResponse>> GetTopProductsAsync(int take, CancellationToken cancellationToken = default);
+    Task<ConsumptionForecastResponse> GetConsumptionForecastAsync(int historicalDays = 30, int forecastDays = 7, CancellationToken cancellationToken = default);
 }

@@ -237,6 +237,62 @@
 
       </header>
 
+      @if (forecast(); as forecast) {
+
+      @if (forecast.hasEnoughData) {
+      <div class="forecast-summary">
+        <div class="forecast-main">
+          <span>
+            Consumo previsto
+          </span>
+          <strong>
+            {{ forecast.estimatedConsumption }}
+          </strong>
+          <small>
+            unidades nos próximos
+            {{ forecast.forecastDays }}
+            dias
+          </small>
+        </div>
+        <div class="forecast-metrics">
+          <div>
+            <span>Média diária</span>
+            <strong>
+              {{ forecast.dailyAverage }}
+            </strong>
+          </div>
+          <div>
+            <span>Tendência</span>
+            <strong [class.trend-growth]="forecast.trend === 'Crescimento'"
+              [class.trend-reduction]="forecast.trend === 'Redução'">
+              {{ forecast.trend }}
+            </strong>
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="chart-container forecast-chart">
+        <canvas #forecastChart></canvas>
+      </div>
+
+      <div class="ai-footer">
+
+        <mat-icon>
+          auto_awesome
+        </mat-icon>
+
+        <span>
+          Previsão gerada por modelo
+          ML.NET SSA com base nos últimos
+          {{ forecast.historicalDays }} dias.
+        </span>
+
+      </div>
+
+      } @else {
+
       <div class="intelligence-placeholder">
 
         <div class="intelligence-icon">
@@ -245,16 +301,20 @@
 
         <div>
           <strong>
-            Análise preditiva
+            Histórico insuficiente
           </strong>
 
           <p>
-            O histórico de consumo será utilizado para estimar a demanda
-            dos próximos sete dias.
+            O modelo precisa de mais dados de consumo
+            para gerar uma previsão confiável.
           </p>
         </div>
 
       </div>
+
+      }
+
+      }
 
     </article>
 
