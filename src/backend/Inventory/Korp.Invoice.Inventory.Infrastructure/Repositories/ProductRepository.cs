@@ -15,36 +15,45 @@ public sealed class ProductRepository : BaseRepository<Product>, IProductReposit
         var productIds = ids.Distinct().ToList();
         return await DbSet.Where(x => productIds.Contains(x.Id)).ToListAsync(cancellationToken);
     }
-    public Task<(IReadOnlyCollection<Product> Items, int TotalCount)> SearchAsync(string? search
-        , int page
-        , int pageSize
-        , string sortBy
-        , string sortDirection
-        , CancellationToken cancellationToken = default
-        )
+    public Task<(IReadOnlyCollection<Product> Items, int TotalCount)> SearchAsync(
+     string? search = null,
+     int page = 1,
+     int pageSize = 10,
+     string? sortBy = null,
+     string? sortDirection = null,
+     CancellationToken cancellationToken = default)
     {
         Expression<Func<Product, bool>>? predicate = null;
 
         if (!string.IsNullOrWhiteSpace(search))
         {
             var term = search.Trim();
-            predicate = x => EF.Functions.ILike(x.Code, $"%{term}%") || EF.Functions.ILike(x.Description, $"%{term}%");
+
+            predicate = x =>
+                x.Code.Contains(term) ||
+                x.Description.Contains(term);
         }
 
-        Func<IQueryable<Product>, IOrderedQueryable<Product>> orderBy = (sortBy.ToLowerInvariant(), sortDirection.ToLowerInvariant())
-            switch
-        {
-            ("code", "desc") => query => query.OrderByDescending(x => x.Code),
-            ("description", "asc") => query => query.OrderBy(x => x.Description),
-            ("description", "desc") => query => query.OrderByDescending(x => x.Description),
-            ("stock", "asc") => query => query.OrderBy(x => x.Stock),
-            ("stock", "desc") => query => query.OrderByDescending(x => x.Stock),
-            ("createdatutc", "asc") => query => query.OrderBy(x => x.CreatedAtUtc),
-            ("createdatutc", "desc") => query => query.OrderByDescending(x => x.CreatedAtUtc),
+        var normalizedSortBy = sortBy?.Trim().ToLowerInvariant() ?? "code";
+        var normalizedDirection = sortDirection?.Trim().ToLowerInvariant() ?? "asc";
 
-            _ =>
-                query => query.OrderBy(x => x.Code)
-        };
+        Func<IQueryable<Product>, IOrderedQueryable<Product>> orderBy =
+            (normalizedSortBy, normalizedDirection) switch
+            {
+                ("code", "asc") => query => query.OrderBy(x => x.Code),
+                ("code", "desc") => query => query.OrderByDescending(x => x.Code),
+
+                ("description", "asc") => query => query.OrderBy(x => x.Description),
+                ("description", "desc") => query => query.OrderByDescending(x => x.Description),
+
+                ("stock", "asc") => query => query.OrderBy(x => x.Stock),
+                ("stock", "desc") => query => query.OrderByDescending(x => x.Stock),
+
+                ("createdatutc", "asc") => query => query.OrderBy(x => x.CreatedAtUtc),
+                ("createdatutc", "desc") => query => query.OrderByDescending(x => x.CreatedAtUtc),
+
+                _ => query => query.OrderBy(x => x.Code)
+            };
 
         return GetPagedAsync(
             page,
