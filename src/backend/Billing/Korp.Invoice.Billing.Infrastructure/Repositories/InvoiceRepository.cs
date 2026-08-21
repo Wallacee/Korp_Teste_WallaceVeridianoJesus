@@ -35,4 +35,8 @@ public sealed class InvoiceRepository : BaseRepository<FiscalInvoice>, IInvoiceR
         };
         return GetPagedAsync(page, pageSize, predicate, orderBy, cancellationToken);
     }
+
+    public async Task<bool> HasProductAsync(Guid productId, CancellationToken cancellationToken = default)
+    => await Context.Set<InvoiceItem>().AsNoTracking().AnyAsync(x => x.ProductId == productId, cancellationToken);
+
 }

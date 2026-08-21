@@ -1,4 +1,6 @@
+using Korp.Invoice.Inventory.Application.ExternalServices;
 using Korp.Invoice.Inventory.Domain.Interfaces;
+using Korp.Invoice.Inventory.Infrastructure.ExternalServices.Billing;
 using Korp.Invoice.Inventory.Infrastructure.Persistence;
 using Korp.Invoice.Inventory.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -21,6 +23,12 @@ public static class DependencyInjection
         services.AddScoped<IStockOperationRepository, StockOperationRepository>();
 
         services.AddScoped<IInventoryUnitOfWork, InventoryUnitOfWork>();
+
+        services.AddHttpClient<IBillingService, BillingHttpService>(client =>
+        {
+            client.BaseAddress = new Uri(
+                configuration["Services:Billing"]!);
+        });
 
         return services;
     }

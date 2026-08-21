@@ -1,6 +1,5 @@
 using Korp.Invoice.Billing.Domain.Interfaces;
-using Korp.Invoice.Billing.Infrastructure.Persistence;
-namespace Korp.Invoice.Billing.Infrastructure;
+namespace Korp.Invoice.Billing.Infrastructure.Persistence;
 
 public sealed class BillingUnitOfWork : IBillingUnitOfWork
 {

@@ -12,5 +12,7 @@ namespace Korp.Invoice.Billing.Domain.Interfaces
             string sortBy,
             string sortDirection,
             CancellationToken cancellationToken = default);
+
+        Task<bool> HasProductAsync(Guid productId, CancellationToken cancellationToken = default);
     }
 }

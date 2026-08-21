@@ -20,6 +20,8 @@ import { Router, RouterLink } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { NotificationService } from '../../../../shared/services/notification.service';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog';
+import { HttpErrorResponse } from '@angular/common/http';
+import { ApiValidationProblem } from '../../../../shared/utils/api-validation-error.util';
 @Component({
   selector: 'app-product-list',
   standalone: true,
@@ -149,7 +151,6 @@ export class ProductList implements OnInit {
         }
       }
     );
-
     dialogRef.afterClosed().subscribe(confirmed => {
       if (!confirmed)
         return;
@@ -161,9 +162,24 @@ export class ProductList implements OnInit {
           this.loadProducts();
         },
 
-        error: error => {
-          this.notification.error(error.error?.detail ?? 'Não foi possível excluir o produto.');
-        }
+        error: (error: HttpErrorResponse) => {
+  const problem =
+    error.error as ApiValidationProblem | undefined;
+
+  if (error.status === 409) {
+    this.notification.warning(
+      problem?.detail ??
+      'O produto não pode ser excluído porque está em uso.'
+    );
+
+    return;
+  }
+
+  this.notification.error(
+    problem?.detail ??
+    'Não foi possível excluir o produto.'
+  );
+}
       });
     });
   }

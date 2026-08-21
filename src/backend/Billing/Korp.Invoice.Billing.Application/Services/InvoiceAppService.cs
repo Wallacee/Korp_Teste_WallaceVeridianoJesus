@@ -106,6 +106,9 @@ public sealed class InvoiceAppService : IInvoiceAppService
         await _invoiceRepository.DeleteAsync(invoice, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
     }
+    public Task<bool> HasProductAsync(Guid productId, CancellationToken cancellationToken = default)
+    => _invoiceRepository.HasProductAsync(productId, cancellationToken);
+
     private static FiscalInvoiceDto Map(FiscalInvoice invoice)
     {
         return new FiscalInvoiceDto
